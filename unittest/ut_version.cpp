@@ -2,12 +2,12 @@
 
 #include <iostream>
 
-namespace miu::project {
+namespace miu::asp {
 extern std::string_view version();
 extern std::string_view build_info();
-}    // namespace miu::project
+}    // namespace miu::asp
 
 TEST(ut_version, version) {
-    std::cout << miu::project::version() << std::endl;
-    std::cout << miu::project::build_info() << std::endl;
+    std::cout << miu::asp::version() << std::endl;
+    std::cout << miu::asp::build_info() << std::endl;
 }
