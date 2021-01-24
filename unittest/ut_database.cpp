@@ -66,3 +66,16 @@ TEST_F(ut_database, reset) {
     EXPECT_EQ(ss.str(), layout->keys());
 }
 
+TEST_F(ut_database, set_by_idx) {
+    nlohmann::json keys;
+    keys["item0"] = 0;
+    keys["item1"] = 1;
+
+    miu::asp::database db { "ut_database" };
+    db.reset(keys);
+
+    db.set(1, 2);
+    EXPECT_EQ(2, db.get("item1").get<int32_t>());
+
+    EXPECT_NO_THROW(db.set(2, +"abc"));
+}

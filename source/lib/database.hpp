@@ -31,6 +31,15 @@ class database {
         std::strncpy(l->keys(), raw.c_str(), raw.size());
     }
 
+    auto set(uint32_t idx, com::variant v) {
+        auto l = (layout const*)_buf.data();
+        if (idx < l->size) {
+            l->vals()[idx] = v;
+        } else {
+            log::error(name(), +"set overflow", idx, +">=", l->size);
+        }
+    }
+
     com::variant get(std::string_view key) const {
         int32_t idx = keys()[key.data()];
         return vals()[idx];
