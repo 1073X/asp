@@ -11,7 +11,20 @@ namespace miu::asp {
 class database {
   public:
     database(std::string_view name)
-        : _buf({ name, "asp" }) {}
+        : _buf({ name, "asp" }, 4096) {}
+
+    auto reset(nlohmann::json const& keys, std::vector<com::variant> const& vals) {
+        std::ostringstream ss;
+        ss << keys;
+        auto raw = ss.str();
+
+        auto vals_total = sizeof(com::variant) * vals.size();
+
+        _buf.resize(vals_total + raw.size());
+        auto l = new (_buf.data()) layout { vals.size() };
+        std::memcpy(l->vals(), vals.data(), vals_total);
+        std::strncpy(l->keys(), raw.c_str(), raw.size());
+    }
 
     com::variant get(std::string_view key) const {
         int32_t idx = keys()[key.data()];
