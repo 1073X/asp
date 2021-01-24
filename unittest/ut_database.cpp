@@ -24,9 +24,9 @@ TEST_F(ut_database, open) {
         miu::shm::buffer buf { "ut_database.asp", 4096 };
         auto layout = (miu::asp::layout*)buf.data();
 
-        layout->size      = 2;
-        layout->vals()[0] = 1;
-        layout->vals()[1] = std::string("abc");
+        layout->size         = 2;
+        layout->records()[0] = 1;
+        layout->records()[1] = std::string("abc");
 
         nlohmann::json keys;
         keys["item0"] = 0;
@@ -59,10 +59,10 @@ TEST_F(ut_database, reset) {
     miu::shm::buffer buf { "ut_database.asp" };
     auto layout = (miu::asp::layout*)buf.data();
     EXPECT_EQ(4U, layout->size);
-    EXPECT_EQ(type_id<void>::value, layout->vals()[0].id());
-    EXPECT_EQ(type_id<void>::value, layout->vals()[1].id());
-    EXPECT_EQ(type_id<void>::value, layout->vals()[2].id());
-    EXPECT_EQ(type_id<void>::value, layout->vals()[3].id());
+    EXPECT_EQ(type_id<void>::value, layout->records()[0].id());
+    EXPECT_EQ(type_id<void>::value, layout->records()[1].id());
+    EXPECT_EQ(type_id<void>::value, layout->records()[2].id());
+    EXPECT_EQ(type_id<void>::value, layout->records()[3].id());
 
     std::ostringstream ss;
     ss << keys;

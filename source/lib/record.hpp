@@ -16,7 +16,13 @@ class record {
     }
 
     auto version() const { return _ver; }
-    auto value() const { return _var; }
+
+    auto id() const { return _var.id(); }
+
+    template<typename T>
+    auto get() const {
+        return _var.get<T>();
+    }
 
   private:
     com::variant _var;

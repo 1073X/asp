@@ -25,40 +25,40 @@ class database {
         ss << keys;
         auto raw = ss.str();
 
-        auto vals_count = collect(keys);
-        auto vals_total = sizeof(com::variant) * vals_count;
-        std::vector<com::variant> vals(vals_count, com::variant());
+        auto records_count = collect(keys);
+        auto records_total = sizeof(record) * records_count;
+        std::vector<record> records(records_count, record());
 
-        _buf.resize(sizeof(com::variant) * vals_count + raw.size());
-        auto l = new (_buf.data()) layout { vals_count };
-        std::memcpy(l->vals(), vals.data(), vals_total);
+        _buf.resize(sizeof(com::variant) * records_count + raw.size());
+        auto l = new (_buf.data()) layout { records_count };
+        std::memcpy(l->records(), records.data(), records_total);
         std::strncpy(l->keys(), raw.c_str(), raw.size());
     }
 
     auto& operator[](uint32_t idx) {
         auto l = (layout*)_buf.data();
         if (idx < l->size) {
-            return l->vals()[idx];
+            return l->records()[idx];
         }
 
         log::error(name(), +"access overflow", idx, +">=", l->size);
-        static com::variant dummy;
+        static record dummy;
         return dummy;
     }
 
   private:
     uint32_t collect(nlohmann::json const& json) const {
-        auto vals = 0U;
+        auto count = 0U;
         for (auto const& [key, val] : json.items()) {
             if (val.is_number_integer()) {
-                vals++;
+                count++;
             } else if (val.is_structured()) {
-                vals += collect(val);
+                count += collect(val);
             } else {
                 log::error(name(), +"illegal index", key);
             }
         }
-        return vals;
+        return count;
     }
 
     nlohmann::json keys() const {
@@ -66,9 +66,9 @@ class database {
         return nlohmann::json::parse(l->keys());
     }
 
-    com::variant const* vals() const {
+    record const* records() const {
         auto l = (layout const*)_buf.data();
-        return l->vals();
+        return l->records();
     }
 
   private:
