@@ -39,8 +39,11 @@ TEST_F(ut_database, open) {
 
     miu::asp::database db { "ut_database" };
     EXPECT_EQ("ut_database.asp", db.name());
-    EXPECT_EQ(1, db.get("item0").get<int32_t>());
-    EXPECT_EQ("abc", db.get("item1").get<std::string>());
+    EXPECT_EQ(2U, db.size());
+
+    EXPECT_EQ(1, db[0].get<int32_t>());
+    EXPECT_EQ("abc", db[1].get<std::string>());
+    EXPECT_NO_THROW(db[2]);
 }
 
 TEST_F(ut_database, reset) {
@@ -74,8 +77,6 @@ TEST_F(ut_database, set_by_idx) {
     miu::asp::database db { "ut_database" };
     db.reset(keys);
 
-    db.set(1, 2);
-    EXPECT_EQ(2, db.get("item1").get<int32_t>());
-
-    EXPECT_NO_THROW(db.set(2, +"abc"));
+    db[1] = 2;
+    EXPECT_EQ(2, db[1].get<int32_t>());
 }

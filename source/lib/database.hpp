@@ -15,6 +15,10 @@ class database {
         : _buf({ name, "asp" }, 4096) {}
 
     auto name() const { return _buf.name(); }
+    auto size() const {
+        auto l = (layout*)_buf.data();
+        return l->size;
+    }
 
     auto reset(nlohmann::json const& keys) {
         std::ostringstream ss;
@@ -31,18 +35,15 @@ class database {
         std::strncpy(l->keys(), raw.c_str(), raw.size());
     }
 
-    auto set(uint32_t idx, com::variant v) {
-        auto l = (layout const*)_buf.data();
+    auto& operator[](uint32_t idx) {
+        auto l = (layout*)_buf.data();
         if (idx < l->size) {
-            l->vals()[idx] = v;
-        } else {
-            log::error(name(), +"set overflow", idx, +">=", l->size);
+            return l->vals()[idx];
         }
-    }
 
-    com::variant get(std::string_view key) const {
-        int32_t idx = keys()[key.data()];
-        return vals()[idx];
+        log::error(name(), +"access overflow", idx, +">=", l->size);
+        static com::variant dummy;
+        return dummy;
     }
 
   private:
