@@ -80,3 +80,45 @@ TEST_F(ut_database, set_by_idx) {
     db[1] = 2;
     EXPECT_EQ(2, db[1].get<int32_t>());
 }
+
+TEST_F(ut_database, capture) {
+    nlohmann::json keys;
+    keys["item0"]             = 0;
+    keys["item1"]             = 1;
+    keys["group"]["item1"]    = 2;
+    keys["array"][0]["item1"] = 3;
+    keys["array"][1][0]       = 4;
+
+    miu::asp::database db { "ut_database" };
+    db.reset(keys);
+    db[0] = 0;
+    db[1] = 1;
+    db[2] = 2;
+    db[3] = 3;
+    db[4] = 4;
+
+    auto data = db.capture(0);
+    EXPECT_EQ(0, data["item0"]);
+    EXPECT_EQ(1, data["item1"]);
+    EXPECT_EQ(2, data["group"]["item1"]);
+    EXPECT_EQ(3, data["array"][0]["item1"]);
+    EXPECT_EQ(4, data["array"][1][0]);
+    EXPECT_EQ(1, data["_VER_"]);
+}
+
+TEST_F(ut_database, capture_delta) {
+    nlohmann::json keys;
+    keys["item0"] = 0;
+    keys["item1"] = 1;
+
+    miu::asp::database db { "ut_database" };
+    db.reset(keys);
+    db[0] = 0;
+    db[1] = 1;
+    db[1] = 2;
+
+    auto data = db.capture(1);
+    EXPECT_FALSE(data.contains("item0"));
+    EXPECT_EQ(2, data["item1"]);
+    EXPECT_EQ(2, data["_VER_"]);
+}
