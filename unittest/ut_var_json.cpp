@@ -43,4 +43,3 @@ TYPED_TEST(ut_var_json_str, get) {
     auto var = miu::com::variant { val };
     EXPECT_EQ(json("abc"), var.get<json>());
 }
-

@@ -24,10 +24,12 @@ class record {
         return _var.get<T>();
     }
 
+    auto padding() { return _padding; }
+
   private:
     com::variant _var;
     uint32_t _ver { 0 };
-    uint32_t _padding[3];
+    uint32_t _padding[3] {};
 };
 static_assert(sizeof(record) == 32);
 

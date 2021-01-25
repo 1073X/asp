@@ -6,7 +6,7 @@ namespace miu::asp {
 
 struct layout {
     uint32_t size;
-    char padding[60];
+    uint32_t padding[15];
 
     auto records() const { return (record*)(this + 1); }
     auto keys() const { return (char*)(records() + size); }

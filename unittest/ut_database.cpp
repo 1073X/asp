@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include <log/log.hpp>
 #include <shm/tempfs.hpp>
 #include <vector>
 
