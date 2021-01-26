@@ -18,15 +18,27 @@ class frontend {
 
     auto operator[](uint32_t idx) const { return _cbs[idx]; }
 
-    template<typename T, typename... ARGS>
-    auto insert(callback::getter const& get, T const& t, ARGS&&... args) {
-        auto idx = make_index(_keys, t, std::forward<ARGS>(args)...);
+    template<typename... ARGS>
+    auto insert_getter(callback::getter const& cb, ARGS&&... args) {
+        auto idx = make_index(_keys, std::forward<ARGS>(args)...);
         while (_cbs.size() <= idx) {
-            log::debug(+"asp", _cbs.size(), +"-", t, std::forward<ARGS>(args)...);
+            log::debug(+"asp get", _cbs.size(), +"-", std::forward<ARGS>(args)...);
             _cbs.emplace_back();
         }
-        if (!_cbs[idx].reset(get)) {
-            FATAL_ERROR<std::logic_error>(+"asp(dup) -", t, std::forward<ARGS>(args)...);
+        if (!_cbs[idx].reset(cb)) {
+            FATAL_ERROR<std::logic_error>(+"asp get DUP -", std::forward<ARGS>(args)...);
+        }
+    }
+
+    template<typename... ARGS>
+    auto insert_setter(callback::setter const& cb, ARGS&&... args) {
+        auto idx = make_index(_keys, std::forward<ARGS>(args)...);
+        while (_cbs.size() <= idx) {
+            log::debug(+"asp set", _cbs.size(), +"-", std::forward<ARGS>(args)...);
+            _cbs.emplace_back();
+        }
+        if (!_cbs[idx].reset(cb)) {
+            FATAL_ERROR<std::logic_error>(+"asp set DUP -", std::forward<ARGS>(args)...);
         }
     }
 
