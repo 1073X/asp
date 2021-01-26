@@ -2,6 +2,7 @@
 
 #include <com/variant.hpp>
 #include <functional>
+#include <log/log.hpp>
 
 namespace miu::asp {
 
@@ -17,7 +18,14 @@ class callback {
         }
         return false;
     }
-    auto get() const { return _get(); }
+
+    auto get() const {
+        if (!_get) {
+            log::error(+"unsupported getter");
+            return com::variant {};
+        }
+        return _get();
+    }
 
     auto reset(setter const& set) {
         if (!_set) {
@@ -26,7 +34,14 @@ class callback {
         }
         return false;
     }
-    auto set(com::variant v) { _set(v); }
+
+    auto set(com::variant v) {
+        if (!_set) {
+            log::error(+"unsupported setter");
+            return;
+        }
+        _set(v);
+    }
 
   private:
     getter _get;

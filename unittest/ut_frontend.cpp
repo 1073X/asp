@@ -18,6 +18,12 @@ struct ut_frontend : public testing::Test {
     miu::asp::frontend frontend;
 };
 
+TEST_F(ut_frontend, empty) {
+    EXPECT_EQ(0U, frontend.size());
+    EXPECT_EQ(variant(), frontend[0].get());
+    frontend[1].set(2);
+}
+
 TEST_F(ut_frontend, get) {
     auto get = std::bind(&ut_frontend::get, this);
     frontend.insert_getter(get, +"item1");
@@ -62,6 +68,8 @@ TEST_F(ut_frontend, set) {
     frontend.insert_setter(set, +"array", 0, +"item2");
 
     EXPECT_EQ(7U, frontend.size());
+    EXPECT_CALL(*this, set(variant(1)));
+    frontend[0].set(1);
 
     nlohmann::json keys;
     keys["item1"]             = 0;
@@ -75,15 +83,22 @@ TEST_F(ut_frontend, set) {
     EXPECT_EQ(keys, frontend.keys());
 }
 
-TEST_F(ut_frontend, duplicated) {
+TEST_F(ut_frontend, duplicate) {
     auto get = std::bind(&ut_frontend::get, this);
     frontend.insert_getter(get, +"item1");
-    EXPECT_ANY_THROW(frontend.insert_getter(get, +"item1"));
+    EXPECT_FALSE(frontend.insert_getter(get, +"item1"));
 
     frontend.insert_getter(get, +"group", +"item1");
-    EXPECT_ANY_THROW(frontend.insert_getter(get, +"group", +"item1"));
+    EXPECT_FALSE(frontend.insert_getter(get, +"group", +"item1"));
 
     frontend.insert_getter(get, +"array", 0);
-    EXPECT_ANY_THROW(frontend.insert_getter(get, +"array", 0));
+    EXPECT_FALSE(frontend.insert_getter(get, +"array", 0));
 }
 
+TEST_F(ut_frontend, conflict) {
+    auto set = std::bind(&ut_frontend::set, this, std::placeholders::_1);
+    frontend.insert_setter(set, +"group", +"item1");
+
+    auto get = std::bind(&ut_frontend::get, this);
+    EXPECT_FALSE(frontend.insert_getter(get, +"group"));
+}
