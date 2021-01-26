@@ -19,13 +19,13 @@ struct ut_frontend : public testing::Test {
 
 TEST_F(ut_frontend, insert) {
     auto callback = std::bind(&ut_frontend::callback, this);
-    frontend.insert(callback, "item1");
-    frontend.insert(callback, "item2");
-    frontend.insert(callback, "group", "item1");
-    frontend.insert(callback, "array", 0, "item1");
-    frontend.insert(callback, "array", 3);
-    frontend.insert(callback, "array", 2, "item1");
-    frontend.insert(callback, "array", 0, "item2");
+    frontend.insert(callback, +"item1");
+    frontend.insert(callback, +"item2");
+    frontend.insert(callback, +"group", +"item1");
+    frontend.insert(callback, +"array", 0, +"item1");
+    frontend.insert(callback, +"array", 3);
+    frontend.insert(callback, +"array", 2, +"item1");
+    frontend.insert(callback, +"array", 0, +"item2");
 
     EXPECT_EQ(7U, frontend.size());
     EXPECT_CALL(*this, callback())
@@ -52,13 +52,13 @@ TEST_F(ut_frontend, insert) {
 
 TEST_F(ut_frontend, duplicated) {
     auto callback = std::bind(&ut_frontend::callback, this);
-    frontend.insert(callback, "item1");
-    EXPECT_ANY_THROW(frontend.insert(callback, "item1"));
+    frontend.insert(callback, +"item1");
+    EXPECT_ANY_THROW(frontend.insert(callback, +"item1"));
 
-    frontend.insert(callback, "group", "item1");
-    EXPECT_ANY_THROW(frontend.insert(callback, "group", "item1"));
+    frontend.insert(callback, +"group", +"item1");
+    EXPECT_ANY_THROW(frontend.insert(callback, +"group", +"item1"));
 
-    frontend.insert(callback, "array", 0);
-    EXPECT_ANY_THROW(frontend.insert(callback, "array", 0));
+    frontend.insert(callback, +"array", 0);
+    EXPECT_ANY_THROW(frontend.insert(callback, +"array", 0));
 }
 

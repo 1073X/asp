@@ -5,9 +5,22 @@
 
 namespace miu::asp {
 
-struct callback {
+class callback {
+  public:
     using getter = std::function<com::variant()>;
-    getter get;
+
+    auto reset(getter const& get) {
+        if (!_get) {
+            _get = get;
+            return true;
+        }
+        return false;
+    }
+
+    auto get() const { return _get(); }
+
+  private:
+    getter _get;
 };
 
 }    // namespace miu::asp
