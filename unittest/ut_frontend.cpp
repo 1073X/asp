@@ -33,10 +33,10 @@ TEST_F(ut_frontend, insert) {
         .WillOnce(Return(variant(+"abc")))
         .WillOnce(Return(variant(1.2)))
         .WillOnce(Return(variant(2)));
-    EXPECT_EQ(variant(1), frontend[0]());
-    EXPECT_EQ(variant(+"abc"), frontend[1]());
-    EXPECT_EQ(variant(1.2), frontend[2]());
-    EXPECT_EQ(variant(2), frontend[3]());
+    EXPECT_EQ(variant(1), frontend[0].get());
+    EXPECT_EQ(variant(+"abc"), frontend[1].get());
+    EXPECT_EQ(variant(1.2), frontend[2].get());
+    EXPECT_EQ(variant(2), frontend[3].get());
 
     nlohmann::json keys;
     keys["item1"]             = 0;
