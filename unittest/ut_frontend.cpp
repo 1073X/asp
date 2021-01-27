@@ -98,7 +98,9 @@ TEST_F(ut_frontend, duplicate) {
 TEST_F(ut_frontend, conflict) {
     auto set = std::bind(&ut_frontend::set, this, std::placeholders::_1);
     frontend.insert_setter(set, +"group", +"item1");
+    frontend.insert_setter(set, +"array", 0);
 
     auto get = std::bind(&ut_frontend::get, this);
     EXPECT_FALSE(frontend.insert_getter(get, +"group"));
+    EXPECT_FALSE(frontend.insert_getter(get, +"array"));
 }

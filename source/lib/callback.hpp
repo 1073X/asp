@@ -1,8 +1,8 @@
 #pragma once
 
-#include <com/variant.hpp>
-#include <functional>
 #include <log/log.hpp>
+
+#include "wrapper.hpp"
 
 namespace miu::asp {
 
@@ -41,6 +41,18 @@ class callback {
             return;
         }
         _set(v);
+    }
+
+  public:
+    template<typename F, typename... ARGS>
+    static getter make_getter(F const& func, ARGS&&... args) {
+        return std::bind(&wrapper<F>::bounce, func, std::forward<ARGS>(args)...);
+    }
+
+    template<typename F, typename... ARGS>
+    static setter make_setter(F const& func, ARGS&&... args) {
+        using namespace std::placeholders;
+        return std::bind(&wrapper<F>::bounce, func, std::forward<ARGS>(args)..., _1);
     }
 
   private:
