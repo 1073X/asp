@@ -7,7 +7,7 @@ namespace miu::asp {
 class record {
   public:
     template<typename T>
-    auto operator=(T const& v) {
+    auto set(T const& v) {
         auto var = com::variant { v };
         if (var != _var) {
             _var = var;

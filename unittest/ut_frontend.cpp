@@ -8,10 +8,12 @@ using testing::Return;
 struct ut_frontend : public testing::Test {
     void SetUp() override {
         using miu::log::severity;
-        miu::log::log::instance()->reset(severity::DEBUG, 1024);
+        // miu::log::log::instance()->reset(severity::DEBUG, 1024);
     }
 
-    void TearDown() override { miu::log::log::instance()->dump(); }
+    void TearDown() override {
+        // miu::log::log::instance()->dump();
+    }
 
     MOCK_METHOD(variant, get, ());
     MOCK_METHOD(void, set, (variant));
@@ -20,8 +22,8 @@ struct ut_frontend : public testing::Test {
 
 TEST_F(ut_frontend, empty) {
     EXPECT_EQ(0U, frontend.size());
-    EXPECT_EQ(variant(), frontend[0].get());
-    frontend[1].set(2);
+    EXPECT_EQ(variant(), frontend.at(0).get());
+    frontend.at(1).set(2);
 }
 
 TEST_F(ut_frontend, get) {
@@ -40,10 +42,10 @@ TEST_F(ut_frontend, get) {
         .WillOnce(Return(variant(+"abc")))
         .WillOnce(Return(variant(1.2)))
         .WillOnce(Return(variant(2)));
-    EXPECT_EQ(variant(1), frontend[0].get());
-    EXPECT_EQ(variant(+"abc"), frontend[1].get());
-    EXPECT_EQ(variant(1.2), frontend[2].get());
-    EXPECT_EQ(variant(2), frontend[3].get());
+    EXPECT_EQ(variant(1), frontend.at(0).get());
+    EXPECT_EQ(variant(+"abc"), frontend.at(1).get());
+    EXPECT_EQ(variant(1.2), frontend.at(2).get());
+    EXPECT_EQ(variant(2), frontend.at(3).get());
 
     nlohmann::json keys;
     keys["item1"]             = 0;
@@ -69,7 +71,7 @@ TEST_F(ut_frontend, set) {
 
     EXPECT_EQ(7U, frontend.size());
     EXPECT_CALL(*this, set(variant(1)));
-    frontend[0].set(1);
+    frontend.at(0).set(1);
 
     nlohmann::json keys;
     keys["item1"]             = 0;

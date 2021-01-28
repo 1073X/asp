@@ -14,7 +14,7 @@ class frontend {
   public:
     json const& keys() const;
     uint32_t size() const;
-    callback& operator[](uint32_t idx);
+    callback& at(uint32_t idx);
 
     template<typename... ARGS>
     auto insert_getter(callback::getter const& cb, ARGS&&... args) {

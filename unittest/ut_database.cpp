@@ -12,11 +12,11 @@ using miu::com::type_id;
 struct ut_database : public testing::Test {
     void SetUp() override {
         using miu::log::severity;
-        miu::log::log::instance()->reset(severity::DEBUG, 1024);
+        // miu::log::log::instance()->reset(severity::DEBUG, 1024);
     }
     void TearDown() override {
         miu::shm::tempfs::remove("ut_database.asp");
-        miu::log::log::instance()->dump();
+        // miu::log::log::instance()->dump();
     }
 };
 
@@ -25,9 +25,9 @@ TEST_F(ut_database, open) {
         miu::shm::buffer buf { "ut_database.asp", 4096 };
         auto layout = (miu::asp::layout*)buf.data();
 
-        layout->size         = 2;
-        layout->records()[0] = 1;
-        layout->records()[1] = std::string("abc");
+        layout->size = 2;
+        layout->records()[0].set(1);
+        layout->records()[1].set(std::string("abc"));
 
         nlohmann::json keys;
         keys["item0"] = 0;
@@ -78,7 +78,7 @@ TEST_F(ut_database, set_by_idx) {
     miu::asp::database db { "ut_database" };
     db.reset(keys);
 
-    db[1] = 2;
+    db[1].set(2);
     EXPECT_EQ(2, db[1].get<int32_t>());
 }
 
@@ -92,11 +92,11 @@ TEST_F(ut_database, capture) {
 
     miu::asp::database db { "ut_database" };
     db.reset(keys);
-    db[0] = 0;
-    db[1] = 1;
-    db[2] = 2;
-    db[3] = 3;
-    db[4] = 4;
+    db[0].set(0);
+    db[1].set(1);
+    db[2].set(2);
+    db[3].set(3);
+    db[4].set(4);
 
     auto data = db.capture(0);
     EXPECT_EQ(0, data["item0"]);
@@ -114,9 +114,9 @@ TEST_F(ut_database, capture_delta) {
 
     miu::asp::database db { "ut_database" };
     db.reset(keys);
-    db[0] = 0;
-    db[1] = 1;
-    db[1] = 2;
+    db[0].set(0);
+    db[1].set(1);
+    db[1].set(2);
 
     auto data = db.capture(1);
     EXPECT_FALSE(data.contains("item0"));
