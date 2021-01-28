@@ -12,15 +12,9 @@ namespace miu::asp {
 
 class frontend {
   public:
-    auto keys() const { return _keys; }
-
-    auto size() const { return _cbs.size(); }
-    auto operator[](uint32_t idx) const {
-        if (idx < size()) {
-            return _cbs[idx];
-        }
-        return callback {};
-    }
+    json const& keys() const;
+    uint32_t size() const;
+    callback& operator[](uint32_t idx);
 
     template<typename... ARGS>
     auto insert_getter(callback::getter const& cb, ARGS&&... args) {
@@ -52,17 +46,7 @@ class frontend {
         return true;
     }
 
-    uint32_t fetch_index(json& root) const {
-        if (root.is_null()) {
-            root = _cbs.size();
-        }
-
-        if (root.is_number()) {
-            return root.get<uint32_t>();
-        } else {
-            return -1U;
-        }
-    }
+    uint32_t fetch_index(json&) const;
 
     template<typename T, typename... ARGS>
     uint32_t fetch_index(json& root, T const& t, ARGS&&... args) const {
@@ -72,7 +56,7 @@ class frontend {
 
     template<typename... ARGS>
     uint32_t fetch_index(json& root, int32_t idx, ARGS&&... args) const {
-        while (idx >= root.size()) {
+        while ((uint32_t)idx >= root.size()) {
             root.push_back(json());
         }
         return fetch_index(root[idx], std::forward<ARGS>(args)...);
