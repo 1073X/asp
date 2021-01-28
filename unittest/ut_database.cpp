@@ -12,11 +12,11 @@ using miu::com::type_id;
 struct ut_database : public testing::Test {
     void SetUp() override {
         using miu::log::severity;
-        miu::log::log::instance()->reset(severity::DEBUG, 1024);
+        // miu::log::log::instance()->reset(severity::DEBUG, 1024);
     }
     void TearDown() override {
         miu::shm::tempfs::remove("ut_database.asp");
-        miu::log::log::instance()->dump();
+        // miu::log::log::instance()->dump();
     }
 };
 

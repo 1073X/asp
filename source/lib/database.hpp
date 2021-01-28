@@ -13,13 +13,13 @@ namespace miu::asp {
 class database {
   public:
     database(std::string_view name);
-
     void reset(json const& keys);
 
+    json keys() const;
     std::string name() const;
     uint32_t size() const;
 
-    record& operator[](uint32_t idx);
+    record& operator[](uint32_t);
 
     json capture(uint32_t version) const;
 
@@ -29,7 +29,6 @@ class database {
     uint32_t cap_object(uint32_t ver, json const& keys, json& data) const;
     uint32_t cap_array(uint32_t ver, json const& keys, json& data) const;
 
-    json keys() const;
     record const* records() const;
 
   private:

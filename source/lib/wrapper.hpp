@@ -15,6 +15,11 @@ struct wrapper<R (T::*)(ARGS...) const> {
     }
 };
 
+template<typename R, typename T, typename... ARGS>
+struct wrapper<R (T::*)(ARGS...)> {
+    static com::variant bounce(R (T::*f)(ARGS...), T* t, ARGS... args) { return (t->*f)(args...); }
+};
+
 template<typename R, typename... ARGS>
 struct wrapper<R (*)(ARGS...)> {
     static com::variant bounce(R (*f)(ARGS...), ARGS... args) {

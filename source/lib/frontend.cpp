@@ -11,7 +11,7 @@ uint32_t frontend::size() const {
     return _cbs.size();
 }
 
-callback& frontend::operator[](uint32_t idx) {
+callback& frontend::at(uint32_t idx) {
     if (idx < size()) {
         return _cbs[idx];
     }
