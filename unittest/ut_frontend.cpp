@@ -106,21 +106,26 @@ TEST_F(ut_frontend, conflict) {
 }
 
 TEST_F(ut_frontend, reset) {
-    auto set = std::bind(&ut_frontend::set, this, std::placeholders::_1);
-    frontend.insert_setter(set, +"item1");
-    frontend.insert_setter(set, +"group", +"item1");
-    frontend.insert_setter(set, +"array", 0, +"item1");
-
-    std::vector<variant> vals { 1, +"xyz", 1.2 };
     nlohmann::json keys;
     keys["item1"]             = 0;
     keys["group"]["item1"]    = 1;
     keys["array"][0]["item1"] = 2;
 
+    miu::asp::database db { "ut_frontend" };
+    db.reset(keys);
+    db[0].set(1);
+    db[1].set(+"xyz");
+    db[2].set(1.2);
+
+    auto set = std::bind(&ut_frontend::set, this, std::placeholders::_1);
+    frontend.insert_setter(set, +"item1");
+    frontend.insert_setter(set, +"group", +"item1");
+    frontend.insert_setter(set, +"array", 0, +"item1");
+
     EXPECT_CALL(*this, set(variant(1)));
     EXPECT_CALL(*this, set(variant(+"xyz")));
     EXPECT_CALL(*this, set(variant(1.2)));
-    frontend.reset(vals.data(), vals.size(), keys);
+    frontend.reset(db, keys);
 }
 
 TEST_F(ut_frontend, reset_conflict) {
@@ -136,5 +141,7 @@ TEST_F(ut_frontend, reset_conflict) {
     keys["array2"][1]      = 2;
     keys["item1"]          = 3;
 
-    EXPECT_NO_THROW(frontend.reset(nullptr, 0, keys));
+    miu::asp::database db { "ut_frontend" };
+
+    EXPECT_NO_THROW(frontend.reset(db, keys));
 }

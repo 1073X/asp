@@ -16,7 +16,7 @@ class record {
     }
 
     auto version() const { return _ver; }
-
+    auto variant() const { return _var; }
     auto id() const { return _var.id(); }
 
     template<typename T>

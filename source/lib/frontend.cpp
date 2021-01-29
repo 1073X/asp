@@ -39,32 +39,32 @@ struct values {
 };
 
 template<typename... PATH>
-static void do_reset(values const& vals,
+static void do_reset(database& db,
                      json const& src,
                      std::vector<callback>& cbs,
                      json const& tag,
                      com::strcat path) {
     if (src.is_object() && tag.is_object()) {
         for (auto const& [src_key, src_obj] : src.items()) {
-            do_reset(vals, src_obj, cbs, tag[src_key], path + src_key);
+            do_reset(db, src_obj, cbs, tag[src_key], path + src_key);
         }
     } else if (src.is_array() && tag.is_array()) {
         auto max_idx = std::min(src.size(), tag.size());
         for (auto i = 0U; i < max_idx; i++) {
-            do_reset(vals, src[i], cbs, tag[i], path + i);
+            do_reset(db, src[i], cbs, tag[i], path + i);
         }
     } else if (src.is_number() && tag.is_number()) {
         auto idx = tag.get<uint32_t>();
-        auto val = vals[src];
-        log::info(+"asp reset", idx, '-', path, '[', val, ']');
-        cbs[idx].set(val);
+        auto var = db[src].variant();
+        log::info(+"asp reset", idx, '-', path, '[', var, ']');
+        cbs[idx].set(var);
     } else {
         log::warn(+"asp ignore conflict", path);
     }
 }
 
-void frontend::reset(com::variant const* vals, uint32_t size, json const& keys) {
-    do_reset({ vals, size }, keys, _cbs, _keys, "");
+void frontend::reset(database& db, json const& keys) {
+    do_reset(db, keys, _cbs, _keys, "");
 }
 
 }    // namespace miu::asp

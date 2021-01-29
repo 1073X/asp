@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "callback.hpp"
+#include "database.hpp"
 
 using nlohmann::json;
 
@@ -26,7 +27,7 @@ class frontend {
         return insert(cb, "setter", std::forward<ARGS>(args)...);
     }
 
-    void reset(com::variant const*, uint32_t, json const&);
+    void reset(database&, json const&);
 
   private:
     template<typename T, typename... ARGS>
