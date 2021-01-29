@@ -7,7 +7,7 @@
 #include "source/lib/database.hpp"
 #include "source/lib/layout.hpp"
 
-using miu::com::type_id;
+using miu::com::variant;
 
 struct ut_database : public testing::Test {
     void SetUp() override {
@@ -42,8 +42,8 @@ TEST_F(ut_database, open) {
     EXPECT_EQ("ut_database.asp", db.name());
     EXPECT_EQ(2U, db.size());
 
-    EXPECT_EQ(1, db[0].get<int32_t>());
-    EXPECT_EQ("abc", db[1].get<std::string>());
+    EXPECT_EQ(variant(1), db[0].variant());
+    EXPECT_EQ(variant(std::string("abc")), db[1].variant());
     EXPECT_NO_THROW(db[2]);
 }
 
@@ -60,10 +60,10 @@ TEST_F(ut_database, reset) {
     miu::shm::buffer buf { "ut_database.asp" };
     auto layout = (miu::asp::layout*)buf.data();
     EXPECT_EQ(4U, layout->size);
-    EXPECT_EQ(type_id<void>::value, layout->records()[0].id());
-    EXPECT_EQ(type_id<void>::value, layout->records()[1].id());
-    EXPECT_EQ(type_id<void>::value, layout->records()[2].id());
-    EXPECT_EQ(type_id<void>::value, layout->records()[3].id());
+    EXPECT_EQ(variant(), layout->records()[0].variant());
+    EXPECT_EQ(variant(), layout->records()[1].variant());
+    EXPECT_EQ(variant(), layout->records()[2].variant());
+    EXPECT_EQ(variant(), layout->records()[3].variant());
 
     std::ostringstream ss;
     ss << keys;
@@ -79,7 +79,7 @@ TEST_F(ut_database, set_by_idx) {
     db.reset(keys);
 
     db[1].set(2);
-    EXPECT_EQ(2, db[1].get<int32_t>());
+    EXPECT_EQ(variant(2), db[1].variant());
 }
 
 TEST_F(ut_database, capture) {

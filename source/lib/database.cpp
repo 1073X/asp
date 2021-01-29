@@ -76,7 +76,7 @@ uint32_t database::cap_object(uint32_t ver, json const& keys, json& data) const 
         if (val.is_number_integer()) {
             auto rec = records()[val];
             if (rec.version() > ver) {
-                data[key] = rec.get<json>().value();
+                data[key] = rec.variant().get<json>().value();
                 max_ver   = std::max(max_ver, rec.version());
             }
         } else if (val.is_object()) {
@@ -98,7 +98,7 @@ uint32_t database::cap_array(uint32_t ver, json const& keys, json& data) const {
         if (val.is_number_integer()) {
             auto rec = records()[val];
             if (rec.version() > ver) {
-                data.push_back(rec.get<json>().value());
+                data.push_back(rec.variant().get<json>().value());
                 max_ver = std::max(max_ver, rec.version());
             }
         } else if (val.is_object()) {
