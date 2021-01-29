@@ -23,11 +23,12 @@ void database::reset(json const& keys) {
     auto cnt = collect(keys);
     auto len = sizeof(record) * cnt;
 
-    _buf.resize(len + raw.size());
+    _buf.resize(len + raw.size() + 1);
     auto l  = new (_buf.data()) layout {};
     l->size = cnt;
     std::memcpy(l->records(), std::vector(cnt, record()).data(), len);
     std::strncpy(l->keys(), raw.c_str(), raw.size());
+    l->keys()[raw.size()] = '\0';
 }
 
 std::string database::name() const {
@@ -76,7 +77,7 @@ uint32_t database::cap_object(uint32_t ver, json const& keys, json& data) const 
         if (val.is_number_integer()) {
             auto rec = records()[val];
             if (rec.version() > ver) {
-                data[key] = rec.get<json>().value();
+                data[key] = rec.variant().get<json>().value();
                 max_ver   = std::max(max_ver, rec.version());
             }
         } else if (val.is_object()) {
@@ -98,7 +99,7 @@ uint32_t database::cap_array(uint32_t ver, json const& keys, json& data) const {
         if (val.is_number_integer()) {
             auto rec = records()[val];
             if (rec.version() > ver) {
-                data.push_back(rec.get<json>().value());
+                data.push_back(rec.variant().get<json>().value());
                 max_ver = std::max(max_ver, rec.version());
             }
         } else if (val.is_object()) {
@@ -116,7 +117,12 @@ uint32_t database::cap_array(uint32_t ver, json const& keys, json& data) const {
 
 json database::keys() const {
     auto l = (layout const*)_buf.data();
-    return json::parse(l->keys());
+    try {
+        return json::parse(l->keys());
+    } catch (nlohmann::detail::parse_error) {
+        log::error(name(), +"failed to read keys", std::string(l->keys()));
+        return {};
+    }
 }
 
 record const* database::records() const {

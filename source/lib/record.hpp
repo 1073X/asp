@@ -16,14 +16,7 @@ class record {
     }
 
     auto version() const { return _ver; }
-
-    auto id() const { return _var.id(); }
-
-    template<typename T>
-    auto get() const {
-        return _var.get<T>();
-    }
-
+    auto variant() const { return _var; }
     auto padding() { return _padding; }
 
   private:

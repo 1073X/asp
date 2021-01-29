@@ -5,6 +5,7 @@
 #include "source/lib/backend.hpp"
 
 using miu::asp::callback;
+using miu::com::variant;
 using testing::Return;
 
 struct ut_backend : public testing::Test {
@@ -34,8 +35,8 @@ TEST_F(ut_backend, init) {
     EXPECT_EQ(keys, db.keys());
 
     // init values
-    EXPECT_EQ(1, db[0].get<int32_t>());
-    EXPECT_EQ(2, db[1].get<int32_t>());
+    EXPECT_EQ(variant(1), db[0].variant());
+    EXPECT_EQ(variant(2), db[1].variant());
 }
 
 TEST_F(ut_backend, dump) {
@@ -55,11 +56,10 @@ TEST_F(ut_backend, dump) {
     }
 
     miu::asp::database db { "ut_backend" };
-    EXPECT_EQ(1, db[0].get<int32_t>());
-    EXPECT_EQ(2, db[1].get<int32_t>());
+    EXPECT_EQ(variant(1), db[0].variant());
+    EXPECT_EQ(variant(2), db[1].variant());
 }
 
-#if 0
 TEST_F(ut_backend, reload) {
     nlohmann::json keys;
     keys["item1"] = 0;
@@ -83,4 +83,3 @@ TEST_F(ut_backend, reload) {
     EXPECT_CALL(m, set(888));
     miu::asp::backend { "ut_backend", &frontend };
 }
-#endif

@@ -26,7 +26,7 @@ TEST_F(ut_frontend, empty) {
     frontend.at(1).set(2);
 }
 
-TEST_F(ut_frontend, get) {
+TEST_F(ut_frontend, getter) {
     auto get = std::bind(&ut_frontend::get, this);
     frontend.insert_getter(get, +"item1");
     frontend.insert_getter(get, +"item2");
@@ -59,7 +59,7 @@ TEST_F(ut_frontend, get) {
     EXPECT_EQ(keys, frontend.keys());
 }
 
-TEST_F(ut_frontend, set) {
+TEST_F(ut_frontend, setter) {
     auto set = std::bind(&ut_frontend::set, this, std::placeholders::_1);
     frontend.insert_setter(set, +"item1");
     frontend.insert_setter(set, +"item2");
@@ -105,4 +105,46 @@ TEST_F(ut_frontend, conflict) {
     auto get = std::bind(&ut_frontend::get, this);
     EXPECT_FALSE(frontend.insert_getter(get, +"group"));
     EXPECT_FALSE(frontend.insert_getter(get, +"array"));
+}
+
+TEST_F(ut_frontend, reset) {
+    nlohmann::json keys;
+    keys["item1"]             = 0;
+    keys["group"]["item1"]    = 1;
+    keys["array"][0]["item1"] = 2;
+
+    miu::asp::database db { "ut_frontend" };
+    db.reset(keys);
+    db[0].set(1);
+    db[1].set(+"xyz");
+    db[2].set(1.2);
+
+    auto set = std::bind(&ut_frontend::set, this, std::placeholders::_1);
+    frontend.insert_setter(set, +"item1");
+    frontend.insert_setter(set, +"group", +"item1");
+    frontend.insert_setter(set, +"array", 0, +"item1");
+
+    EXPECT_CALL(*this, set(variant(1)));
+    EXPECT_CALL(*this, set(variant(+"xyz")));
+    EXPECT_CALL(*this, set(variant(1.2)));
+    frontend.reset(db);
+}
+
+TEST_F(ut_frontend, reset_conflict) {
+    auto set = std::bind(&ut_frontend::set, this, std::placeholders::_1);
+    frontend.insert_setter(set, +"group");
+    frontend.insert_setter(set, +"item1", +"group");
+    frontend.insert_setter(set, +"array");
+    frontend.insert_setter(set, +"array2", 0);
+
+    nlohmann::json keys;
+    keys["group"]["item1"] = 0;
+    keys["array"][0]       = 1;
+    keys["array2"][1]      = 2;
+    keys["item1"]          = 3;
+
+    miu::asp::database db { "ut_frontend" };
+    db.reset(keys);
+
+    EXPECT_NO_THROW(frontend.reset(db));
 }
