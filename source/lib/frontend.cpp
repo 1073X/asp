@@ -32,4 +32,39 @@ uint32_t frontend::fetch_index(json& root) const {
     return index;
 }
 
+struct values {
+    auto const& operator[](uint32_t idx) const { return vals[idx]; }
+    com::variant const* vals;
+    uint32_t size;
+};
+
+template<typename... PATH>
+static void do_reset(values const& vals,
+                     json const& src,
+                     std::vector<callback>& cbs,
+                     json const& tag,
+                     com::strcat path) {
+    if (src.is_object() && tag.is_object()) {
+        for (auto const& [src_key, src_obj] : src.items()) {
+            do_reset(vals, src_obj, cbs, tag[src_key], path + src_key);
+        }
+    } else if (src.is_array() && tag.is_array()) {
+        auto max_idx = std::min(src.size(), tag.size());
+        for (auto i = 0U; i < max_idx; i++) {
+            do_reset(vals, src[i], cbs, tag[i], path + i);
+        }
+    } else if (src.is_number() && tag.is_number()) {
+        auto idx = tag.get<uint32_t>();
+        auto val = vals[src];
+        log::info(+"asp reset", idx, '-', path, '[', val, ']');
+        cbs[idx].set(val);
+    } else {
+        log::warn(+"asp ignore conflict", path);
+    }
+}
+
+void frontend::reset(com::variant const* vals, uint32_t size, json const& keys) {
+    do_reset({ vals, size }, keys, _cbs, _keys, "");
+}
+
 }    // namespace miu::asp

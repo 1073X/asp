@@ -18,25 +18,27 @@ class frontend {
 
     template<typename... ARGS>
     auto insert_getter(callback::getter const& cb, ARGS&&... args) {
-        return insert(cb, "get", std::forward<ARGS>(args)...);
+        return insert(cb, "getter", std::forward<ARGS>(args)...);
     }
 
     template<typename... ARGS>
     auto insert_setter(callback::setter const& cb, ARGS&&... args) {
-        return insert(cb, "set", std::forward<ARGS>(args)...);
+        return insert(cb, "setter", std::forward<ARGS>(args)...);
     }
+
+    void reset(com::variant const*, uint32_t, json const&);
 
   private:
     template<typename T, typename... ARGS>
     bool insert(T const& cb, const char* type, ARGS&&... args) {
         auto idx = fetch_index(_keys, std::forward<ARGS>(args)...);
         if (idx == -1U) {
-            log::error(+"asp", type, +"CONFLICT -", std::forward<ARGS>(args)...);
+            log::error(+"asp ", type, +"CONFLICT -", std::forward<ARGS>(args)...);
             return false;
         }
 
         while (_cbs.size() <= idx) {
-            log::debug(+"asp", type, _cbs.size(), +"-", std::forward<ARGS>(args)...);
+            log::debug(+"asp insert", type, _cbs.size(), +"-", std::forward<ARGS>(args)...);
             _cbs.emplace_back();
         }
         if (!_cbs[idx].reset(cb)) {
