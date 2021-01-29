@@ -47,6 +47,17 @@ TEST_F(ut_database, open) {
     EXPECT_NO_THROW(db[2]);
 }
 
+TEST_F(ut_database, invalid_keys) {
+    {
+        miu::shm::buffer buf { "ut_database.asp", 4096 };
+        auto layout       = (miu::asp::layout*)buf.data();
+        layout->size      = 1;
+        layout->keys()[0] = '{';
+    }
+    miu::asp::database db { "ut_database" };
+    EXPECT_EQ(nlohmann::json(), db.keys());
+}
+
 TEST_F(ut_database, reset) {
     nlohmann::json keys;
     keys["item0"]             = 0;

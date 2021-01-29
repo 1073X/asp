@@ -63,8 +63,8 @@ static void do_reset(database& db,
     }
 }
 
-void frontend::reset(database& db, json const& keys) {
-    do_reset(db, keys, _cbs, _keys, "");
+void frontend::reset(database& db) {
+    do_reset(db, db.keys(), _cbs, _keys, "");
 }
 
 }    // namespace miu::asp

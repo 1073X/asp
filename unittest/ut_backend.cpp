@@ -60,7 +60,6 @@ TEST_F(ut_backend, dump) {
     EXPECT_EQ(variant(2), db[1].variant());
 }
 
-#if 0
 TEST_F(ut_backend, reload) {
     nlohmann::json keys;
     keys["item1"] = 0;
@@ -84,4 +83,3 @@ TEST_F(ut_backend, reload) {
     EXPECT_CALL(m, set(888));
     miu::asp::backend { "ut_backend", &frontend };
 }
-#endif

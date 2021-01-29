@@ -27,7 +27,7 @@ class frontend {
         return insert(cb, "setter", std::forward<ARGS>(args)...);
     }
 
-    void reset(database&, json const&);
+    void reset(database&);
 
   private:
     template<typename T, typename... ARGS>

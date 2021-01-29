@@ -8,10 +8,12 @@ using testing::Return;
 struct ut_frontend : public testing::Test {
     void SetUp() override {
         using miu::log::severity;
-        miu::log::log::instance()->reset(severity::DEBUG, 1024);
+        // miu::log::log::instance()->reset(severity::DEBUG, 1024);
     }
 
-    void TearDown() override { miu::log::log::instance()->dump(); }
+    void TearDown() override {
+        // miu::log::log::instance()->dump();
+    }
 
     MOCK_METHOD(variant, get, ());
     MOCK_METHOD(void, set, (variant));
@@ -125,7 +127,7 @@ TEST_F(ut_frontend, reset) {
     EXPECT_CALL(*this, set(variant(1)));
     EXPECT_CALL(*this, set(variant(+"xyz")));
     EXPECT_CALL(*this, set(variant(1.2)));
-    frontend.reset(db, keys);
+    frontend.reset(db);
 }
 
 TEST_F(ut_frontend, reset_conflict) {
@@ -142,6 +144,7 @@ TEST_F(ut_frontend, reset_conflict) {
     keys["item1"]          = 3;
 
     miu::asp::database db { "ut_frontend" };
+    db.reset(keys);
 
-    EXPECT_NO_THROW(frontend.reset(db, keys));
+    EXPECT_NO_THROW(frontend.reset(db));
 }
