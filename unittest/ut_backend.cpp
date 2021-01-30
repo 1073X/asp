@@ -19,8 +19,8 @@ TEST_F(ut_backend, init) {
 
     {
         miu::asp::frontend frontend;
-        frontend.insert_getter(callback::make_getter(&mock::get, &m), +"item1");
-        frontend.insert_getter(callback::make_getter(&mock::get, &m), +"item2");
+        frontend.insert_getter({ +"item1" }, callback::make_getter(&mock::get, &m));
+        frontend.insert_getter({ +"item2" }, callback::make_getter(&mock::get, &m));
 
         EXPECT_CALL(m, get()).WillOnce(Return(1)).WillOnce(Return(2));
         miu::asp::backend backend { "ut_backend", &frontend };
@@ -46,8 +46,8 @@ TEST_F(ut_backend, dump) {
 
     {
         miu::asp::frontend frontend;
-        frontend.insert_getter(callback::make_getter(&mock::get, &m), +"item1");
-        frontend.insert_getter(callback::make_getter(&mock::get, &m), +"item2");
+        frontend.insert_getter({ +"item1" }, callback::make_getter(&mock::get, &m));
+        frontend.insert_getter({ +"item2" }, callback::make_getter(&mock::get, &m));
 
         EXPECT_CALL(m, get()).WillOnce(Return(0)).WillOnce(Return(0)).WillOnce(Return(1)).WillOnce(
             Return(2));
@@ -76,8 +76,8 @@ TEST_F(ut_backend, reload) {
         MOCK_METHOD(void, set, (int32_t));
     } m;
     miu::asp::frontend frontend;
-    frontend.insert_setter(callback::make_setter(&mock::set, &m), +"item1");
-    frontend.insert_setter(callback::make_setter(&mock::set, &m), +"item2");
+    frontend.insert_setter({ +"item1" }, callback::make_setter(&mock::set, &m));
+    frontend.insert_setter({ +"item2" }, callback::make_setter(&mock::set, &m));
 
     EXPECT_CALL(m, set(999));
     EXPECT_CALL(m, set(888));

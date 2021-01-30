@@ -1,5 +1,6 @@
 #include <gmock/gmock.h>
 
+#include "source/lib/backend.hpp"
 #include "source/lib/frontend.hpp"
 
 using miu::com::variant;
@@ -28,13 +29,13 @@ TEST_F(ut_frontend, empty) {
 
 TEST_F(ut_frontend, getter) {
     auto get = std::bind(&ut_frontend::get, this);
-    frontend.insert_getter(get, +"item1");
-    frontend.insert_getter(get, +"item2");
-    frontend.insert_getter(get, +"group", +"item1");
-    frontend.insert_getter(get, +"array", 0, +"item1");
-    frontend.insert_getter(get, +"array", 3);
-    frontend.insert_getter(get, +"array", 2, +"item1");
-    frontend.insert_getter(get, +"array", 0, +"item2");
+    frontend.insert_getter({ +"item1" }, get);
+    frontend.insert_getter({ +"item2" }, get);
+    frontend.insert_getter({ +"group", +"item1" }, get);
+    frontend.insert_getter({ +"array", 0, +"item1" }, get);
+    frontend.insert_getter({ +"array", 3U }, get);
+    frontend.insert_getter({ +"array", 2, +"item1" }, get);
+    frontend.insert_getter({ +"array", 0, +"item2" }, get);
 
     EXPECT_EQ(7U, frontend.size());
     EXPECT_CALL(*this, get())
@@ -61,13 +62,13 @@ TEST_F(ut_frontend, getter) {
 
 TEST_F(ut_frontend, setter) {
     auto set = std::bind(&ut_frontend::set, this, std::placeholders::_1);
-    frontend.insert_setter(set, +"item1");
-    frontend.insert_setter(set, +"item2");
-    frontend.insert_setter(set, +"group", +"item1");
-    frontend.insert_setter(set, +"array", 0, +"item1");
-    frontend.insert_setter(set, +"array", 3);
-    frontend.insert_setter(set, +"array", 2, +"item1");
-    frontend.insert_setter(set, +"array", 0, +"item2");
+    frontend.insert_setter({ +"item1" }, set);
+    frontend.insert_setter({ +"item2" }, set);
+    frontend.insert_setter({ +"group", +"item1" }, set);
+    frontend.insert_setter({ +"array", 0, +"item1" }, set);
+    frontend.insert_setter({ +"array", 3 }, set);
+    frontend.insert_setter({ +"array", 2, +"item1" }, set);
+    frontend.insert_setter({ +"array", 0, +"item2" }, set);
 
     EXPECT_EQ(7U, frontend.size());
     EXPECT_CALL(*this, set(variant(1)));
@@ -87,24 +88,24 @@ TEST_F(ut_frontend, setter) {
 
 TEST_F(ut_frontend, duplicate) {
     auto get = std::bind(&ut_frontend::get, this);
-    frontend.insert_getter(get, +"item1");
-    EXPECT_FALSE(frontend.insert_getter(get, +"item1"));
+    frontend.insert_getter({ +"item1" }, get);
+    EXPECT_FALSE(frontend.insert_getter({ +"item1" }, get));
 
-    frontend.insert_getter(get, +"group", +"item1");
-    EXPECT_FALSE(frontend.insert_getter(get, +"group", +"item1"));
+    frontend.insert_getter({ +"group", +"item1" }, get);
+    EXPECT_FALSE(frontend.insert_getter({ +"group", +"item1" }, get));
 
-    frontend.insert_getter(get, +"array", 0);
-    EXPECT_FALSE(frontend.insert_getter(get, +"array", 0));
+    frontend.insert_getter({ +"array", 0 }, get);
+    EXPECT_FALSE(frontend.insert_getter({ +"array", 0 }, get));
 }
 
 TEST_F(ut_frontend, conflict) {
     auto set = std::bind(&ut_frontend::set, this, std::placeholders::_1);
-    frontend.insert_setter(set, +"group", +"item1");
-    frontend.insert_setter(set, +"array", 0);
+    frontend.insert_setter({ +"group", +"item1" }, set);
+    frontend.insert_setter({ +"array", 0 }, set);
 
     auto get = std::bind(&ut_frontend::get, this);
-    EXPECT_FALSE(frontend.insert_getter(get, +"group"));
-    EXPECT_FALSE(frontend.insert_getter(get, +"array"));
+    EXPECT_FALSE(frontend.insert_getter({ +"group" }, get));
+    EXPECT_FALSE(frontend.insert_getter({ +"array" }, get));
 }
 
 TEST_F(ut_frontend, reset) {
@@ -120,9 +121,9 @@ TEST_F(ut_frontend, reset) {
     db[2].set(1.2);
 
     auto set = std::bind(&ut_frontend::set, this, std::placeholders::_1);
-    frontend.insert_setter(set, +"item1");
-    frontend.insert_setter(set, +"group", +"item1");
-    frontend.insert_setter(set, +"array", 0, +"item1");
+    frontend.insert_setter({ +"item1" }, set);
+    frontend.insert_setter({ +"group", +"item1" }, set);
+    frontend.insert_setter({ +"array", 0, +"item1" }, set);
 
     EXPECT_CALL(*this, set(variant(1)));
     EXPECT_CALL(*this, set(variant(+"xyz")));
@@ -132,10 +133,10 @@ TEST_F(ut_frontend, reset) {
 
 TEST_F(ut_frontend, reset_conflict) {
     auto set = std::bind(&ut_frontend::set, this, std::placeholders::_1);
-    frontend.insert_setter(set, +"group");
-    frontend.insert_setter(set, +"item1", +"group");
-    frontend.insert_setter(set, +"array");
-    frontend.insert_setter(set, +"array2", 0);
+    frontend.insert_setter({ +"group" }, set);
+    frontend.insert_setter({ +"item1", +"group" }, set);
+    frontend.insert_setter({ +"array" }, set);
+    frontend.insert_setter({ +"array2", 0 }, set);
 
     nlohmann::json keys;
     keys["group"]["item1"] = 0;

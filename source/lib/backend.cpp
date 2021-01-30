@@ -1,6 +1,8 @@
 
 #include "backend.hpp"
 
+#include "frontend.hpp"
+
 namespace miu::asp {
 
 backend::backend(std::string_view name, frontend* f)
