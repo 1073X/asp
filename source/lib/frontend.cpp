@@ -1,6 +1,8 @@
 
 #include "frontend.hpp"
 
+#include "database.hpp"
+
 namespace miu::asp {
 
 json const& frontend::keys() const {
@@ -20,23 +22,76 @@ callback& frontend::at(uint32_t idx) {
     return dummy;
 }
 
-uint32_t frontend::fetch_index(json& root) const {
-    if (root.is_null()) {
-        root = _cbs.size();
+static uint32_t fetch(std::vector<com::variant> const& keys, json& root, uint32_t max_index) {
+    if (keys.empty()) {
+        auto index = -1U;
+        if (root.is_null()) {
+            index = max_index;
+            root  = index;
+        } else if (root.is_number()) {
+            index = root.get<uint32_t>();
+        }
+        return index;
     }
 
-    auto index = -1U;
-    if (root.is_number()) {
-        index = root.get<uint32_t>();
+    auto it = keys.begin();
+    switch (it->id()) {
+    case com::type_id<const char*>::value:
+    case com::type_id<std::string>::value: {
+        auto next = std::vector(it + 1, keys.end());
+        auto name = it->get<std::string>().value();
+        return fetch(next, root[name], max_index);
     }
-    return index;
+    case com::type_id<int8_t>::value:
+    case com::type_id<int16_t>::value:
+    case com::type_id<int32_t>::value:
+    case com::type_id<int64_t>::value:
+    case com::type_id<uint8_t>::value:
+    case com::type_id<uint16_t>::value:
+    case com::type_id<uint32_t>::value:
+    case com::type_id<uint64_t>::value: {
+        auto idx = it->get<uint64_t>().value();
+        while (idx >= root.size()) {
+            root.push_back(json());
+        }
+        auto next = std::vector(it + 1, keys.end());
+        return fetch(next, root[idx], max_index);
+    }
+    default:
+        return -1U;
+    }
 }
 
-struct values {
-    auto const& operator[](uint32_t idx) const { return vals[idx]; }
-    com::variant const* vals;
-    uint32_t size;
-};
+template<typename T>
+static bool do_insert(const char* type,
+                      std::vector<com::variant> const& keys,
+                      json& root,
+                      T const& cb,
+                      std::vector<callback>& cbs) {
+    auto idx = fetch(keys, root, cbs.size());
+    if (idx == -1U) {
+        log::error(+"asp", type, +"CONFLICT -", keys);
+        return false;
+    }
+
+    while (cbs.size() <= idx) {
+        log::debug(+"asp insert", type, cbs.size(), +"-", keys);
+        cbs.emplace_back();
+    }
+    if (!cbs[idx].reset(cb)) {
+        log::error(+"asp", type, +"DUPLICATE -", keys);
+        return false;
+    }
+    return true;
+}
+
+bool frontend::insert_getter(std::vector<com::variant> const& keys, callback::getter const& cb) {
+    return do_insert("getter", keys, _keys, cb, _cbs);
+}
+
+bool frontend::insert_setter(std::vector<com::variant> const& keys, callback::setter const& cb) {
+    return do_insert("setter", keys, _keys, cb, _cbs);
+}
 
 template<typename... PATH>
 static void do_reset(database& db,
@@ -56,7 +111,7 @@ static void do_reset(database& db,
     } else if (src.is_number() && tag.is_number()) {
         auto idx = tag.get<uint32_t>();
         auto var = db[src].variant();
-        log::info(+"asp reset", idx, '-', path, '[', var, ']');
+        log::info(+"asp reset", idx, +"- VEC[", path, +"] =", var);
         cbs[idx].set(var);
     } else {
         log::warn(+"asp ignore conflict", path);

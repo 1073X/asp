@@ -1,6 +1,6 @@
 #include <gmock/gmock.h>
 
-#include "source/lib/callback.hpp"
+#include "asp/callback.hpp"
 
 using miu::asp::callback;
 using miu::com::variant;
