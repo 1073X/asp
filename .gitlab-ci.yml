@@ -44,6 +44,9 @@ delivery:
         - mkdir -p $UT_PATH
         - cp -fv release/ut_asp $UT_PATH
 
+        - mkdir -p $BIN_PATH
+        - cp -fv release/aspview $BIN_PATH
+
     only:
         - master
 
