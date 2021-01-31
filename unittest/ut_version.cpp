@@ -2,10 +2,7 @@
 
 #include <iostream>
 
-namespace miu::asp {
-extern std::string_view version();
-extern std::string_view build_info();
-}    // namespace miu::asp
+#include "asp/version.hpp"
 
 TEST(ut_version, version) {
     std::cout << miu::asp::version() << std::endl;
