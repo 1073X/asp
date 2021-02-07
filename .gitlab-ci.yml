@@ -53,6 +53,6 @@ delivery:
 cmd:
     stage: trigger
     script:
-        - curl -X POST -F token=187e8c273995b3f26231a84f72e6e3 -F ref=master <url>/api/v4/projects/14/trigger/pipeline
+        - curl -X POST -F token=187e8c273995b3f26231a84f72e6e3 -F ref=master $GITLAB_URL/api/v4/projects/14/trigger/pipeline
     only:
         - master
