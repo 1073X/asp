@@ -7,24 +7,27 @@
 
 namespace miu::asp {
 
-class asp {
-  public:
-    template<typename F, typename... ARGS>
-    static void read(std::vector<com::variant> const& keys, F const& f, ARGS&&... args) {
-        insert_getter(keys, callback::make_getter(f, std::forward<ARGS>(args)...));
-    }
+//// Frontend
 
-    template<typename F, typename... ARGS>
-    static void load(std::vector<com::variant> const& keys, F const& f, ARGS&&... args) {
-        insert_setter(keys, callback::make_setter(f, std::forward<ARGS>(args)...));
-    }
+// setter
+template<typename F, typename... ARGS>
+void read(std::vector<com::variant> const& keys, F const& f, ARGS&&... args) {
+    extern void insert_getter(std::vector<com::variant> const&, callback::getter const&);
+    insert_getter(keys, callback::make_getter(f, std::forward<ARGS>(args)...));
+}
 
-    static void reset(std::string_view = "");
-    static void dump();
+// getter
+template<typename F, typename... ARGS>
+void load(std::vector<com::variant> const& keys, F const& f, ARGS&&... args) {
+    extern void insert_setter(std::vector<com::variant> const&, callback::setter const&);
+    insert_setter(keys, callback::make_setter(f, std::forward<ARGS>(args)...));
+}
 
-  private:
-    static void insert_getter(std::vector<com::variant> const&, callback::getter const&);
-    static void insert_setter(std::vector<com::variant> const&, callback::setter const&);
-};
+//// Backend
+
+// reset backend shmem buffer
+extern void reset(std::string_view = "");
+// dump aspects to shmem buffer
+extern void dump();
 
 }    // namespace miu::asp
