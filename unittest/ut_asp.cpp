@@ -23,16 +23,16 @@ TEST_F(ut_asp, asp) {
         db[0].set(99);
     }
 
-    miu::asp::asp::read({ +"item1" }, &ut_asp::get, this);
-    miu::asp::asp::load({ +"item1" }, &ut_asp::set, this);
+    miu::asp::read({ +"item1" }, &ut_asp::get, this);
+    miu::asp::load({ +"item1" }, &ut_asp::set, this);
 
     EXPECT_CALL(*this, get())
         .WillOnce(Return(1))     // reset
         .WillOnce(Return(2));    // dump
     EXPECT_CALL(*this, set(99));
-    miu::asp::asp::reset("ut_asp");
-    miu::asp::asp::dump();
+    miu::asp::reset("ut_asp");
+    miu::asp::dump();
 
-    miu::asp::asp::reset();
+    miu::asp::reset();
     miu::shm::tempfs::remove("ut_asp.asp");
 }
