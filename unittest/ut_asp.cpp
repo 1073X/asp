@@ -14,7 +14,7 @@ struct ut_asp : public testing::Test {
 
 TEST_F(ut_asp, asp) {
     {
-        miu::asp::database db { "ut_asp" };
+        miu::asp::database db { "ut_asp", 4096 };
 
         nlohmann::json keys;
         keys["item1"] = 0;

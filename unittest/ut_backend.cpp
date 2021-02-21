@@ -26,7 +26,7 @@ TEST_F(ut_backend, init) {
         miu::asp::backend backend { "ut_backend", &frontend };
     }
 
-    miu::asp::database db { "ut_backend" };
+    miu::asp::database db { "ut_backend", 4096 };
 
     // init keys
     nlohmann::json keys;
@@ -55,7 +55,7 @@ TEST_F(ut_backend, dump) {
         backend.dump();
     }
 
-    miu::asp::database db { "ut_backend" };
+    miu::asp::database db { "ut_backend", miu::shm::mode::READ };
     EXPECT_EQ(variant(1), db[0].variant());
     EXPECT_EQ(variant(2), db[1].variant());
 }
@@ -66,7 +66,7 @@ TEST_F(ut_backend, reload) {
     keys["item2"] = 1;
 
     {
-        miu::asp::database db { "ut_backend" };
+        miu::asp::database db { "ut_backend", 4096 };
         db.reset(keys);
         db[0].set(999);
         db[1].set(888);

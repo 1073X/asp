@@ -114,7 +114,7 @@ TEST_F(ut_frontend, reset) {
     keys["group"]["item1"]    = 1;
     keys["array"][0]["item1"] = 2;
 
-    miu::asp::database db { "ut_frontend" };
+    miu::asp::database db { "ut_frontend", 4096 };
     db.reset(keys);
     db[0].set(1);
     db[1].set(+"xyz");
@@ -144,7 +144,7 @@ TEST_F(ut_frontend, reset_conflict) {
     keys["array2"][1]      = 2;
     keys["item1"]          = 3;
 
-    miu::asp::database db { "ut_frontend" };
+    miu::asp::database db { "ut_frontend", 4096 };
     db.reset(keys);
 
     EXPECT_NO_THROW(frontend.reset(db));

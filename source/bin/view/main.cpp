@@ -23,7 +23,7 @@ int32_t main(int32_t argc, const char* argv[]) try {
     } else {
         auto asp_name = settings.required<std::string>(0);
         if (miu::shm::tempfs::exists(asp_name, "asp")) {
-            miu::asp::database db { settings.required<std::string>(0) };
+            miu::asp::database db { settings.required<std::string>(0), miu::shm::mode::READ };
             std::cout << std::setw(4) << db.capture(0) << std::endl;
         } else {
             FATAL_ERROR<std::invalid_argument>("cann't find asp [", asp_name, "]");
