@@ -6,7 +6,7 @@
 namespace miu::asp {
 
 backend::backend(std::string_view name, frontend* f)
-    : _database(name)
+    : _database(name, 4096)
     , _frontend(f) {
     _frontend->reset(_database);
 

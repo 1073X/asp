@@ -11,8 +11,26 @@ std::optional<json> variant::get<json>() const;
 
 namespace miu::asp {
 
-database::database(std::string_view name)
-    : _buf({ name, "asp" }, 4096) {
+static uint32_t collect(std::string_view name, json const& keys) {
+    auto count = 0U;
+    for (auto const& [key, val] : keys.items()) {
+        if (val.is_number_integer()) {
+            count++;
+        } else if (val.is_structured()) {
+            count += collect(name, val);
+        } else {
+            log::error(name, +"illegal index", key);
+        }
+    }
+    return count;
+}
+
+database::database(std::string_view name, uint32_t size)
+    : _buf({ name, "asp" }, size) {
+}
+
+database::database(std::string_view name, shm::mode mode)
+    : _buf({ name, "asp" }, mode) {
 }
 
 void database::reset(json const& keys) {
@@ -20,7 +38,7 @@ void database::reset(json const& keys) {
     ss << keys;
     auto raw = ss.str();
 
-    auto cnt = collect(keys);
+    auto cnt = collect(name(), keys);
     auto len = sizeof(record) * cnt;
 
     _buf.resize(len + raw.size() + 1);
@@ -53,25 +71,11 @@ record& database::operator[](uint32_t idx) {
 
 json database::capture(uint32_t version) const {
     json data(json::value_t::object);
-    data["_VER_"] = cap_object(version, keys(), data);
+    data["_VER_"] = capture_object(version, keys(), data);
     return data;
 }
 
-uint32_t database::collect(json const& keys) const {
-    auto count = 0U;
-    for (auto const& [key, val] : keys.items()) {
-        if (val.is_number_integer()) {
-            count++;
-        } else if (val.is_structured()) {
-            count += collect(val);
-        } else {
-            log::error(name(), +"illegal index", key);
-        }
-    }
-    return count;
-}
-
-uint32_t database::cap_object(uint32_t ver, json const& keys, json& data) const {
+uint32_t database::capture_object(uint32_t ver, json const& keys, json& data) const {
     auto max_ver = 0U;
     for (auto const& [key, val] : keys.items()) {
         if (val.is_number_integer()) {
@@ -82,18 +86,18 @@ uint32_t database::cap_object(uint32_t ver, json const& keys, json& data) const 
             }
         } else if (val.is_object()) {
             json object(json::value_t::object);
-            max_ver   = std::max(max_ver, cap_object(ver, val, object));
+            max_ver   = std::max(max_ver, capture_object(ver, val, object));
             data[key] = object;
         } else if (val.is_array()) {
             json array(json::value_t::array);
-            max_ver   = std::max(max_ver, cap_array(ver, val, array));
+            max_ver   = std::max(max_ver, capture_array(ver, val, array));
             data[key] = array;
         }
     }
     return max_ver;
 }
 
-uint32_t database::cap_array(uint32_t ver, json const& keys, json& data) const {
+uint32_t database::capture_array(uint32_t ver, json const& keys, json& data) const {
     auto max_ver = 0U;
     for (auto const& [key, val] : keys.items()) {
         if (val.is_number_integer()) {
@@ -104,11 +108,11 @@ uint32_t database::cap_array(uint32_t ver, json const& keys, json& data) const {
             }
         } else if (val.is_object()) {
             json object(json::value_t::object);
-            max_ver = std::max(max_ver, cap_object(ver, val, object));
+            max_ver = std::max(max_ver, capture_object(ver, val, object));
             data.push_back(object);
         } else if (val.is_array()) {
             json array(json::value_t::array);
-            max_ver = std::max(max_ver, cap_array(ver, val, array));
+            max_ver = std::max(max_ver, capture_array(ver, val, array));
             data.push_back(array);
         }
     }
