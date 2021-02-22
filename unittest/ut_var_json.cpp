@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
 
+#include <time/stamp.hpp>
+
 #include "source/lib/database.hpp"
 
 template<typename>
@@ -15,11 +17,11 @@ using num_types = testing::Types<int8_t,
                                  uint64_t,
                                  float,
                                  double,
-                                 miu::com::microseconds,
-                                 miu::com::days,
-                                 miu::com::date,
-                                 miu::com::daytime,
-                                 miu::com::datetime>;
+                                 miu::time::delta,
+                                 miu::time::days,
+                                 miu::time::date,
+                                 miu::time::daytime,
+                                 miu::time::stamp>;
 
 TYPED_TEST_SUITE(ut_var_json_num, num_types);
 
