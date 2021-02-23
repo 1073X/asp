@@ -20,13 +20,13 @@ class callback {
   public:
     template<typename F, typename... ARGS>
     static getter make_getter(F const& func, ARGS&&... args) {
-        return std::bind(&wrapper<F>::bounce, func, std::forward<ARGS>(args)...);
+        return std::bind(&get_wrapper<F>::bounce, func, std::forward<ARGS>(args)...);
     }
 
     template<typename F, typename... ARGS>
     static setter make_setter(F const& func, ARGS&&... args) {
         using namespace std::placeholders;
-        return std::bind(&wrapper<F>::bounce, func, std::forward<ARGS>(args)..., _1);
+        return std::bind(&set_wrapper<F>::bounce, func, std::forward<ARGS>(args)..., _1);
     }
 
   private:

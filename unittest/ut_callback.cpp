@@ -32,6 +32,15 @@ TEST(ut_callback, static_getter) {
     EXPECT_EQ(variant(123), func());
 }
 
+TEST(ut_callback, lambda_getter) {
+    struct {
+        MOCK_METHOD(int32_t, get, ());
+    } m;
+    auto func = callback::make_getter([&]() { return m.get(); });
+    EXPECT_CALL(m, get()).WillOnce(testing::Return(123));
+    EXPECT_EQ(variant(123), func());
+}
+
 TEST(ut_callback, static_getter_arg) {
     struct object {
         static int32_t get(int32_t a, int32_t b) { return a + b; }
@@ -69,3 +78,4 @@ TEST(ut_callback, static_setter) {
     EXPECT_CALL(obj, do_set(1));
     func(variant(1));
 }
+
