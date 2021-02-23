@@ -23,6 +23,7 @@ class frontend {
     bool insert_setter(std::vector<com::variant> const&, callback::setter const&);
 
     void reset(database&);
+    void clear();
 
   private:
     std::vector<callback> _cbs;

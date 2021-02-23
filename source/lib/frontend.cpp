@@ -123,4 +123,9 @@ void frontend::reset(database& db) {
     do_reset(db, db.keys(), _cbs, _keys, "");
 }
 
+void frontend::clear() {
+    _keys.clear();
+    _cbs.clear();
+}
+
 }    // namespace miu::asp
