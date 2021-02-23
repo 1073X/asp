@@ -12,7 +12,6 @@ bool callback::reset(getter const& get) {
 
 com::variant callback::get() const {
     if (!_get) {
-        log::error(+"unsupported getter");
         return com::variant {};
     }
     return _get();
@@ -28,7 +27,6 @@ bool callback::reset(setter const& set) {
 
 void callback::set(com::variant v) {
     if (!_set) {
-        log::error(+"unsupported setter");
         return;
     }
     _set(v);
