@@ -32,16 +32,18 @@ TYPED_TEST(ut_var_json_num, get) {
 }
 
 //////////////////////////////////////////////////////
+TEST(ut_var_json, void) {
+    EXPECT_EQ(json("N/A"), miu::com::variant().get<json>());
+}
 
-template<typename>
-struct ut_var_json_str : public testing::Test {};
+TEST(ut_var_json, string) {
+    EXPECT_EQ(json("abc"), miu::com::variant(std::string("abc")).get<json>());
+}
 
-using str_types = testing::Types<const char*, std::string>;
+TEST(ut_var_json, c_str) {
+    EXPECT_EQ(json("LOC_STR"), miu::com::variant(+"abc").get<json>());
+}
 
-TYPED_TEST_SUITE(ut_var_json_str, str_types);
-
-TYPED_TEST(ut_var_json_str, get) {
-    auto val = TypeParam { "abc" };
-    auto var = miu::com::variant { val };
-    EXPECT_EQ(json("abc"), var.get<json>());
+TEST(ut_var_json, bool) {
+    EXPECT_EQ(json(true), miu::com::variant(true).get<json>());
 }
