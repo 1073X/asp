@@ -25,11 +25,12 @@ bool callback::reset(setter const& set) {
     return false;
 }
 
-void callback::set(com::variant v) {
+bool callback::set(com::variant v) {
     if (!_set) {
-        return;
+        return false;
     }
     _set(v);
+    return true;
 }
 
 }    // namespace miu::asp

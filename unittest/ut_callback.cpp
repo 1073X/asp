@@ -5,6 +5,12 @@
 using miu::asp::callback;
 using miu::com::variant;
 
+TEST(ut_callback, default) {
+    callback cb;
+    EXPECT_EQ(variant(), cb.get());
+    EXPECT_FALSE(cb.set(123));
+}
+
 TEST(ut_callback, member_getter) {
     struct object {
         int32_t get() const { return 123; }

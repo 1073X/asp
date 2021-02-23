@@ -70,16 +70,16 @@ static bool do_insert(const char* type,
                       std::vector<callback>& cbs) {
     auto idx = fetch(keys, root, cbs.size());
     if (idx == -1U) {
-        log::error(+"asp", type, +"CONFLICT -", keys);
+        log::error(+"asp ILL", type, keys);
         return false;
     }
 
     while (cbs.size() <= idx) {
-        log::debug(+"asp insert", type, cbs.size(), +"-", keys);
+        log::debug(+"asp ADD", type, cbs.size(), keys);
         cbs.emplace_back();
     }
     if (!cbs[idx].reset(cb)) {
-        log::error(+"asp", type, +"DUPLICATE -", keys);
+        log::error(+"asp DUP", type, keys);
         return false;
     }
     return true;
@@ -111,10 +111,11 @@ static void do_reset(database& db,
     } else if (src.is_number() && tag.is_number()) {
         auto idx = tag.get<uint32_t>();
         auto var = db[src].variant();
-        log::info(+"asp reset", idx, +"- VEC[", path, +"] =", var);
-        cbs[idx].set(var);
+        if (cbs[idx].set(var)) {
+            log::info(+"asp LOAD", idx, +"[", path, +"]", var);
+        }
     } else {
-        log::warn(+"asp ignore conflict", path);
+        log::warn(+"asp ILL ignore", path);
     }
 }
 

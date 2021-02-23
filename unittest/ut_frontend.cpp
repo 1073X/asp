@@ -9,11 +9,11 @@ using testing::Return;
 struct ut_frontend : public testing::Test {
     void SetUp() override {
         using miu::log::severity;
-        // miu::log::log::instance()->reset(severity::DEBUG, 1024);
+        // miu::log::reset(severity::DEBUG, 1024);
     }
 
     void TearDown() override {
-        // miu::log::log::instance()->dump();
+        // miu::log::dump();
     }
 
     MOCK_METHOD(variant, get, ());

@@ -15,7 +15,7 @@ class callback {
     com::variant get() const;
 
     bool reset(setter const&);
-    void set(com::variant);
+    bool set(com::variant);
 
   public:
     template<typename F, typename... ARGS>
