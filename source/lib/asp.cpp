@@ -15,6 +15,8 @@ void reset(std::string_view name) {
 
     if (!name.empty()) {
         g_backend = new backend { name, &g_frontend };
+    } else {
+        g_frontend.clear();
     }
 }
 
