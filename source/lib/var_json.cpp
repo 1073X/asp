@@ -28,10 +28,19 @@ std::optional<json> variant::get<json>() const {
     case type_id<float>::value:
     case type_id<double>::value:
         return json(get<double>().value());
-    case type_id<const char*>::value:
     case type_id<std::string>::value:
         return json(get<std::string>().value());
+
+    case type_id<void>::value:
+        return "N/A";
+    case type_id<const char*>::value:
+        return "LOC_STR";
+
+    case type_id<bool>::value:
+        return get<bool>().value();
+
     default:
+        SYSTEM_WARN("cannot extract json from variant type_id =", id());
         return std::nullopt;
     }
 }

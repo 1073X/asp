@@ -125,6 +125,24 @@ TEST_F(ut_database, capture) {
     EXPECT_EQ(1, data["_VER_"]);
 }
 
+TEST_F(ut_database, capture_invalid_type) {
+    nlohmann::json keys;
+    keys["item0"] = 0;
+    keys["item1"] = 1;
+
+    miu::asp::database db { "ut_database", 4096 };
+    db.reset(keys);
+    db[0].set(+"abc");
+
+    // update record1 version
+    db[1].set(1);
+    db[1].set(variant());
+
+    auto data = db.capture(0);
+    EXPECT_EQ("LOC_STR", data["item0"]);
+    EXPECT_EQ("N/A", data["item1"]);
+}
+
 TEST_F(ut_database, capture_delta) {
     nlohmann::json keys;
     keys["item0"] = 0;

@@ -22,7 +22,7 @@ class record {
   private:
     com::variant _var;
     uint32_t _ver { 0 };
-    uint32_t _padding[3] {};
+    char _padding[12] { '-' };
 };
 static_assert(sizeof(record) == 32);
 
