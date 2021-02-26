@@ -159,3 +159,19 @@ TEST_F(ut_database, capture_delta) {
     EXPECT_EQ(2, data["item1"]);
     EXPECT_EQ(2, data["_VER_"]);
 }
+
+TEST_F(ut_database, camera) {
+    nlohmann::json keys;
+    keys["item0"] = 0;
+    keys["item1"] = 1;
+
+    miu::asp::database db { "ut_database", 4096 };
+    db.reset(keys);
+    db[0].set(0);
+    db[1].set(miu::time::date { 2021, 2, 26 });
+
+    auto data = db.capture(0, [](auto var) { return miu::com::to_string(var); });
+    EXPECT_EQ("[int32_t:0]", data["item0"]);
+    EXPECT_EQ("[time::date:20210226]", data["item1"]);
+}
+

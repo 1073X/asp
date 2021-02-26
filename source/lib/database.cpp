@@ -11,6 +11,10 @@ std::optional<json> variant::get<json>() const;
 
 namespace miu::asp {
 
+json default_camera(com::variant const& var) {
+    return var.get<json>().value();
+}
+
 static uint32_t collect(std::string_view name, json const& keys) {
     auto count = 0U;
     for (auto const& [key, val] : keys.items()) {
@@ -69,50 +73,56 @@ record& database::operator[](uint32_t idx) {
     return dummy;
 }
 
-json database::capture(uint32_t version) const {
+json database::capture(uint32_t version, camera_type const& camera) const {
     json data(json::value_t::object);
-    data["_VER_"] = capture_object(version, keys(), data);
+    data["_VER_"] = capture_object(version, keys(), data, camera);
     return data;
 }
 
-uint32_t database::capture_object(uint32_t ver, json const& keys, json& data) const {
+uint32_t database::capture_object(uint32_t ver,
+                                  json const& keys,
+                                  json& data,
+                                  camera_type const& camera) const {
     auto max_ver = 0U;
     for (auto const& [key, val] : keys.items()) {
         if (val.is_number_integer()) {
             auto rec = records()[val];
             if (rec.version() > ver) {
-                data[key] = rec.variant().get<json>().value();
+                data[key] = camera(rec.variant());
                 max_ver   = std::max(max_ver, rec.version());
             }
         } else if (val.is_object()) {
             json object(json::value_t::object);
-            max_ver   = std::max(max_ver, capture_object(ver, val, object));
+            max_ver   = std::max(max_ver, capture_object(ver, val, object, camera));
             data[key] = object;
         } else if (val.is_array()) {
             json array(json::value_t::array);
-            max_ver   = std::max(max_ver, capture_array(ver, val, array));
+            max_ver   = std::max(max_ver, capture_array(ver, val, array, camera));
             data[key] = array;
         }
     }
     return max_ver;
 }
 
-uint32_t database::capture_array(uint32_t ver, json const& keys, json& data) const {
+uint32_t database::capture_array(uint32_t ver,
+                                 json const& keys,
+                                 json& data,
+                                 camera_type const& camera) const {
     auto max_ver = 0U;
     for (auto const& [key, val] : keys.items()) {
         if (val.is_number_integer()) {
             auto rec = records()[val];
             if (rec.version() > ver) {
-                data.push_back(rec.variant().get<json>().value());
+                data.push_back(camera(rec.variant()));
                 max_ver = std::max(max_ver, rec.version());
             }
         } else if (val.is_object()) {
             json object(json::value_t::object);
-            max_ver = std::max(max_ver, capture_object(ver, val, object));
+            max_ver = std::max(max_ver, capture_object(ver, val, object, camera));
             data.push_back(object);
         } else if (val.is_array()) {
             json array(json::value_t::array);
-            max_ver = std::max(max_ver, capture_array(ver, val, array));
+            max_ver = std::max(max_ver, capture_array(ver, val, array, camera));
             data.push_back(array);
         }
     }

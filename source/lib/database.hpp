@@ -10,6 +10,8 @@ using json = nlohmann::json;
 
 namespace miu::asp {
 
+extern json default_camera(com::variant const&);
+
 class database {
   public:
     database(std::string_view name, uint32_t size);    // make
@@ -23,11 +25,12 @@ class database {
 
     record& operator[](uint32_t);
 
-    json capture(uint32_t version) const;
+    using camera_type = std::function<json(com::variant const&)>;
+    json capture(uint32_t version, camera_type const& = default_camera) const;
 
   private:
-    uint32_t capture_object(uint32_t ver, json const& keys, json& data) const;
-    uint32_t capture_array(uint32_t ver, json const& keys, json& data) const;
+    uint32_t capture_object(uint32_t ver, json const& keys, json& data, camera_type const&) const;
+    uint32_t capture_array(uint32_t ver, json const& keys, json& data, camera_type const&) const;
 
     record const* records() const;
 
