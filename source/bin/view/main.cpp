@@ -15,16 +15,28 @@ int32_t main(int32_t argc, const char* argv[]) try {
     miu::cfg::settings settings { &source };
 
     if (settings.optional<bool>("version", false)) {
-        std::cout << miu::meta::info() << ": dump asp content to json." << std::endl;
+        std::cout << miu::asp::version() << std::endl;
+
+    } else if (settings.optional<bool>("usage", false)) {
         std::cout << miu::asp::version() << std::endl;
         std::cout << miu::asp::build_info() << std::endl;
-        std::cout << "\nUsage: aspview [asp]" << std::endl;
+        std::cout << miu::meta::info() << ": dump asp content as json." << std::endl;
+        std::cout << "\nUsage: aspview <asp name> [--details]" << std::endl;
+        std::cout << "\t--details: show variant type and string value" << std::endl;
 
     } else {
         auto asp_name = settings.required<std::string>(0);
         if (miu::shm::tempfs::exists(asp_name, "asp")) {
             miu::asp::database db { settings.required<std::string>(0), miu::shm::mode::READ };
-            std::cout << std::setw(4) << db.capture(0) << std::endl;
+
+            nlohmann::json json;
+            if (!settings.optional<bool>("details", false)) {
+                json = db.capture(0, miu::asp::default_camera);
+            } else {
+                json = db.capture(0, [](auto var) { return miu::com::to_string(var); });
+            }
+
+            std::cout << std::setw(4) << json << std::endl;
         } else {
             FATAL_ERROR<std::invalid_argument>("cann't find asp [", asp_name, "]");
         }
