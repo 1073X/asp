@@ -48,7 +48,7 @@ TEST_F(ut_database, open_rdwr) {
 }
 
 TEST_F(ut_database, open_read) {
-    miu::asp::database { "ut_database", 4096 };
+    { miu::asp::database db { "ut_database", 4096 }; }
 
     miu::asp::database db { "ut_database", miu::shm::mode::READ };
     EXPECT_EQ("ut_database.asp", db.name());
@@ -174,4 +174,3 @@ TEST_F(ut_database, camera) {
     EXPECT_EQ("[int32_t:0]", data["item0"]);
     EXPECT_EQ("[time::date:20210226]", data["item1"]);
 }
-

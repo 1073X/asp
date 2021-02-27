@@ -46,6 +46,7 @@ delivery:
 
         - mkdir -p $BIN_PATH
         - cp -fv release/aspview $BIN_PATH
+        - cp -fv release/loadasp $BIN_PATH
 
     only:
         - master
