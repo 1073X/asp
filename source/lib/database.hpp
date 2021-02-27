@@ -19,10 +19,10 @@ class database {
 
     void reset(json const& keys);
 
-    json keys() const;
     std::string name() const;
     uint32_t size() const;
 
+    json keys() const;
     record& operator[](uint32_t);
 
     using camera_type = std::function<json(com::variant const&)>;

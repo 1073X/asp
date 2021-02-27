@@ -84,4 +84,3 @@ TEST(ut_callback, static_setter) {
     EXPECT_CALL(obj, do_set(1));
     func(variant(1));
 }
-

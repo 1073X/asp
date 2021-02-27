@@ -27,7 +27,7 @@ int32_t main(int32_t argc, const char* argv[]) try {
     } else {
         auto asp_name = settings.required<std::string>(0);
         if (miu::shm::tempfs::exists(asp_name, "asp")) {
-            miu::asp::database db { settings.required<std::string>(0), miu::shm::mode::READ };
+            miu::asp::database db { asp_name, miu::shm::mode::READ };
 
             nlohmann::json json;
             if (!settings.optional<bool>("details", false)) {
