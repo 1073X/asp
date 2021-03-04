@@ -4,6 +4,8 @@
 
 #include "source/lib/database.hpp"
 
+using miu::com::json;
+
 template<typename>
 struct ut_var_json_num : public testing::Test {};
 

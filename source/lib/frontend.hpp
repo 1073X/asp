@@ -1,13 +1,11 @@
 #pragma once
 
 #include <com/fatal_error.hpp>
+#include <com/json.hpp>
 #include <com/variant.hpp>
-#include <nlohmann/json.hpp>
 #include <vector>
 
 #include "asp/callback.hpp"
-
-using nlohmann::json;
 
 namespace miu::asp {
 
@@ -15,7 +13,7 @@ class database;
 
 class frontend {
   public:
-    json const& keys() const;
+    com::json const& keys() const;
     uint32_t size() const;
     callback& at(uint32_t idx);
 
@@ -27,7 +25,7 @@ class frontend {
 
   private:
     std::vector<callback> _cbs;
-    json _keys;
+    com::json _keys;
 };
 
 }    // namespace miu::asp

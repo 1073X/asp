@@ -22,14 +22,14 @@ struct ut_loader : public testing::Test {
 };
 
 TEST_F(ut_loader, load) {
-    nlohmann::json keys;
+    miu::com::json keys;
     keys["integer"]  = 0;
     keys["unsigned"] = 1;
     keys["double"]   = 2;
     keys["boolean"]  = 3;
     keys["string"]   = 4;
 
-    nlohmann::json vals;
+    miu::com::json vals;
     vals["integer"]  = 123;
     vals["unsigned"] = 123U;
     vals["double"]   = 1.2;
@@ -48,12 +48,12 @@ TEST_F(ut_loader, load) {
 }
 
 TEST_F(ut_loader, mismatch) {
-    nlohmann::json keys;
+    miu::com::json keys;
     keys["item0"]        = 0;
     keys["item2"]["obj"] = 1;
     keys["obj"]          = 2;
 
-    nlohmann::json vals;
+    miu::com::json vals;
     vals["item1"]        = 123;    // key missing
     vals["item2"]        = 321;    // inconsistent
     vals["obj"]["item1"] = 321;    // inconsistent
@@ -64,10 +64,10 @@ TEST_F(ut_loader, mismatch) {
 }
 
 TEST_F(ut_loader, object) {
-    nlohmann::json keys;
+    miu::com::json keys;
     keys["obj"]["item0"] = 0;
 
-    nlohmann::json vals;
+    miu::com::json vals;
     vals["obj"]["item0"] = 123;
 
     database db { "ut_loader", 4096 };
@@ -78,10 +78,10 @@ TEST_F(ut_loader, object) {
 }
 
 TEST_F(ut_loader, array) {
-    nlohmann::json keys;
+    miu::com::json keys;
     keys["array"].push_back(0);
 
-    nlohmann::json vals;
+    miu::com::json vals;
     vals["array"].push_back(123);
     vals["array"].push_back(321);    // mismatch
 
@@ -93,11 +93,11 @@ TEST_F(ut_loader, array) {
 }
 
 TEST_F(ut_loader, change_value) {
-    nlohmann::json keys;
+    miu::com::json keys;
     keys["item0"] = 0;
     keys["item1"] = 1;
 
-    nlohmann::json vals;
+    miu::com::json vals;
     vals["item0"] = "xyz";    // change value
     vals["item1"] = 123;      // change value and type
 
@@ -111,4 +111,3 @@ TEST_F(ut_loader, change_value) {
     EXPECT_EQ(variant(std::string { "xyz" }), db[0].variant());
     EXPECT_EQ(variant((int64_t)123), db[1].variant());
 }
-

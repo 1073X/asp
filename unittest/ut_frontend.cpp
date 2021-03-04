@@ -48,13 +48,13 @@ TEST_F(ut_frontend, getter) {
     EXPECT_EQ(variant(1.2), frontend.at(2).get());
     EXPECT_EQ(variant(2), frontend.at(3).get());
 
-    nlohmann::json keys;
+    miu::com::json keys;
     keys["item1"]             = 0;
     keys["item2"]             = 1;
     keys["group"]["item1"]    = 2;
     keys["array"][0]["item1"] = 3;
     keys["array"][0]["item2"] = 6;
-    keys["array"][1]          = nlohmann::json();
+    keys["array"][1]          = miu::com::json();
     keys["array"][2]["item1"] = 5;
     keys["array"][3]          = 4;
     EXPECT_EQ(keys, frontend.keys());
@@ -74,13 +74,13 @@ TEST_F(ut_frontend, setter) {
     EXPECT_CALL(*this, set(variant(1)));
     frontend.at(0).set(1);
 
-    nlohmann::json keys;
+    miu::com::json keys;
     keys["item1"]             = 0;
     keys["item2"]             = 1;
     keys["group"]["item1"]    = 2;
     keys["array"][0]["item1"] = 3;
     keys["array"][0]["item2"] = 6;
-    keys["array"][1]          = nlohmann::json();
+    keys["array"][1]          = miu::com::json();
     keys["array"][2]["item1"] = 5;
     keys["array"][3]          = 4;
     EXPECT_EQ(keys, frontend.keys());
@@ -109,7 +109,7 @@ TEST_F(ut_frontend, conflict) {
 }
 
 TEST_F(ut_frontend, reset) {
-    nlohmann::json keys;
+    miu::com::json keys;
     keys["item1"]             = 0;
     keys["group"]["item1"]    = 1;
     keys["array"][0]["item1"] = 2;
@@ -138,7 +138,7 @@ TEST_F(ut_frontend, reset_conflict) {
     frontend.insert_setter({ +"array" }, set);
     frontend.insert_setter({ +"array2", 0 }, set);
 
-    nlohmann::json keys;
+    miu::com::json keys;
     keys["group"]["item1"] = 0;
     keys["array"][0]       = 1;
     keys["array2"][1]      = 2;

@@ -29,7 +29,7 @@ TEST_F(ut_database, open_rdwr) {
         layout->records()[0].set(1);
         layout->records()[1].set(std::string("abc"));
 
-        nlohmann::json keys;
+        miu::com::json keys;
         keys["item0"] = 0;
         keys["item1"] = 1;
 
@@ -62,11 +62,11 @@ TEST_F(ut_database, invalid_keys) {
         layout->keys()[0] = '{';
     }
     miu::asp::database db { "ut_database", 4096 };
-    EXPECT_EQ(nlohmann::json(), db.keys());
+    EXPECT_EQ(miu::com::json(), db.keys());
 }
 
 TEST_F(ut_database, reset) {
-    nlohmann::json keys;
+    miu::com::json keys;
     keys["item0"]             = 0;
     keys["item1"]             = 1;
     keys["group"]["item1"]    = 2;
@@ -89,7 +89,7 @@ TEST_F(ut_database, reset) {
 }
 
 TEST_F(ut_database, set_by_idx) {
-    nlohmann::json keys;
+    miu::com::json keys;
     keys["item0"] = 0;
     keys["item1"] = 1;
 
@@ -101,7 +101,7 @@ TEST_F(ut_database, set_by_idx) {
 }
 
 TEST_F(ut_database, capture) {
-    nlohmann::json keys;
+    miu::com::json keys;
     keys["item0"]             = 0;
     keys["item1"]             = 1;
     keys["group"]["item1"]    = 2;
@@ -126,7 +126,7 @@ TEST_F(ut_database, capture) {
 }
 
 TEST_F(ut_database, capture_invalid_type) {
-    nlohmann::json keys;
+    miu::com::json keys;
     keys["item0"] = 0;
     keys["item1"] = 1;
 
@@ -144,7 +144,7 @@ TEST_F(ut_database, capture_invalid_type) {
 }
 
 TEST_F(ut_database, capture_delta) {
-    nlohmann::json keys;
+    miu::com::json keys;
     keys["item0"] = 0;
     keys["item1"] = 1;
 
@@ -161,7 +161,7 @@ TEST_F(ut_database, capture_delta) {
 }
 
 TEST_F(ut_database, camera) {
-    nlohmann::json keys;
+    miu::com::json keys;
     keys["item0"] = 0;
     keys["item1"] = 1;
 

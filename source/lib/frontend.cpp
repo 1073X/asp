@@ -5,7 +5,7 @@
 
 namespace miu::asp {
 
-json const& frontend::keys() const {
+com::json const& frontend::keys() const {
     return _keys;
 }
 
@@ -22,7 +22,7 @@ callback& frontend::at(uint32_t idx) {
     return dummy;
 }
 
-static uint32_t fetch(std::vector<com::variant> const& keys, json& root, uint32_t max_index) {
+static uint32_t fetch(std::vector<com::variant> const& keys, com::json& root, uint32_t max_index) {
     if (keys.empty()) {
         auto index = -1U;
         if (root.is_null()) {
@@ -52,7 +52,7 @@ static uint32_t fetch(std::vector<com::variant> const& keys, json& root, uint32_
     case com::type_id<uint64_t>::value: {
         auto idx = it->get<uint64_t>().value();
         while (idx >= root.size()) {
-            root.push_back(json());
+            root.push_back(com::json());
         }
         auto next = std::vector(it + 1, keys.end());
         return fetch(next, root[idx], max_index);
@@ -65,7 +65,7 @@ static uint32_t fetch(std::vector<com::variant> const& keys, json& root, uint32_
 template<typename T>
 static bool do_insert(const char* type,
                       std::vector<com::variant> const& keys,
-                      json& root,
+                      com::json& root,
                       T const& cb,
                       std::vector<callback>& cbs) {
     auto idx = fetch(keys, root, cbs.size());
@@ -95,9 +95,9 @@ bool frontend::insert_setter(std::vector<com::variant> const& keys, callback::se
 
 template<typename... PATH>
 static void do_reset(database& db,
-                     json const& src,
+                     com::json const& src,
                      std::vector<callback>& cbs,
-                     json const& tag,
+                     com::json const& tag,
                      com::strcat path) {
     if (src.is_object() && tag.is_object()) {
         for (auto const& [src_key, src_obj] : src.items()) {

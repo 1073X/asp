@@ -1,10 +1,10 @@
 
 #include <cfg/cmd_source.hpp>
 #include <cfg/settings.hpp>
+#include <com/json.hpp>
 #include <cstdint>
 #include <iomanip>
 #include <meta/info.hpp>
-#include <nlohmann/json.hpp>
 #include <shm/tempfs.hpp>
 
 #include "asp/version.hpp"
@@ -29,7 +29,7 @@ int32_t main(int32_t argc, const char* argv[]) try {
         if (miu::shm::tempfs::exists(asp_name, "asp")) {
             miu::asp::database db { asp_name, miu::shm::mode::READ };
 
-            nlohmann::json json;
+            miu::com::json json;
             if (!settings.optional<bool>("details", false)) {
                 json = db.capture(0, miu::asp::default_camera);
             } else {
