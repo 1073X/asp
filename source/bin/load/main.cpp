@@ -1,12 +1,12 @@
 
 #include <cfg/cmd_source.hpp>
 #include <cfg/settings.hpp>
+#include <com/json.hpp>
 #include <cstdint>
 #include <fstream>
 #include <iomanip>
 #include <log/log.hpp>
 #include <meta/info.hpp>
-#include <nlohmann/json.hpp>
 #include <shm/tempfs.hpp>
 
 #include "asp/version.hpp"
@@ -41,7 +41,7 @@ int32_t main(int32_t argc, const char* argv[]) try {
         {
             miu::asp::database db { asp_name, miu::shm::mode::RDWR };
             std::ifstream ss { json_file };
-            miu::asp::loader { db }.load(nlohmann::json::parse(ss));
+            miu::asp::loader { db }.load(miu::com::json::parse(ss));
         }
 
         miu::log::dump();

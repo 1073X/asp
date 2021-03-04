@@ -16,7 +16,7 @@ TEST_F(ut_asp, asp) {
     {
         miu::asp::database db { "ut_asp", 4096 };
 
-        nlohmann::json keys;
+        miu::com::json keys;
         keys["item1"] = 0;
 
         db.reset(keys);

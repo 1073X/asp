@@ -29,7 +29,7 @@ TEST_F(ut_backend, init) {
     miu::asp::database db { "ut_backend", 4096 };
 
     // init keys
-    nlohmann::json keys;
+    miu::com::json keys;
     keys["item1"] = 0;
     keys["item2"] = 1;
     EXPECT_EQ(keys, db.keys());
@@ -61,7 +61,7 @@ TEST_F(ut_backend, dump) {
 }
 
 TEST_F(ut_backend, reload) {
-    nlohmann::json keys;
+    miu::com::json keys;
     keys["item1"] = 0;
     keys["item2"] = 1;
 

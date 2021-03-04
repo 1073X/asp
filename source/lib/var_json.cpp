@@ -1,9 +1,7 @@
 
+#include <com/json.hpp>
 #include <com/variant.hpp>
-#include <nlohmann/json.hpp>
 #include <time/stamp.hpp>
-
-using json = nlohmann::json;
 
 namespace miu::com {
 

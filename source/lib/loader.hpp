@@ -1,8 +1,8 @@
 #pragma once
 
+#include <com/json.hpp>
 #include <com/strcat.hpp>
 #include <log/log.hpp>
-#include <nlohmann/json.hpp>
 
 #include "database.hpp"
 
@@ -13,11 +13,11 @@ class loader {
     loader(database& db)
         : _db(db) {}
 
-    void load(nlohmann::json const& vals) { load_object(_db.name(), _db.keys(), vals); }
+    void load(com::json const& vals) { load_object(_db.name(), _db.keys(), vals); }
 
   private:
     template<typename T>
-    void set(com::strcat path, nlohmann::json const key, nlohmann::json const& val) {
+    void set(com::strcat path, com::json const& key, com::json const& val) {
         if (key.is_number_unsigned()) {
             static std::list<std::string> strings;
 
@@ -40,7 +40,7 @@ class loader {
         }
     }
 
-    void load(com::strcat path, nlohmann::json const key, nlohmann::json const& val) {
+    void load(com::strcat path, com::json const& key, com::json const& val) {
         using nlohmann::detail::value_t;
 
         switch (val.type()) {
@@ -70,7 +70,7 @@ class loader {
         }
     }
 
-    void load_object(com::strcat path, nlohmann::json const& keys, nlohmann::json const& vals) {
+    void load_object(com::strcat path, com::json const& keys, com::json const& vals) {
         for (auto const& [k, v] : vals.items()) {
             if (keys.contains(k)) {
                 load(path + k, keys[k], v);
@@ -80,7 +80,7 @@ class loader {
         }
     }
 
-    void load_array(com::strcat path, nlohmann::json const keys, nlohmann::json const& vals) {
+    void load_array(com::strcat path, com::json const& keys, com::json const& vals) {
         for (auto i = 0U; i < vals.size(); i++) {
             if (i < keys.size()) {
                 load(path + i, keys[i], vals[i]);

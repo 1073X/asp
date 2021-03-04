@@ -11,11 +11,11 @@ std::optional<json> variant::get<json>() const;
 
 namespace miu::asp {
 
-json default_camera(com::variant const& var) {
-    return var.get<json>().value();
+com::json default_camera(com::variant const& var) {
+    return var.get<com::json>().value();
 }
 
-static uint32_t collect(std::string_view name, json const& keys) {
+static uint32_t collect(std::string_view name, com::json const& keys) {
     auto count = 0U;
     for (auto const& [key, val] : keys.items()) {
         if (val.is_number_integer()) {
@@ -37,7 +37,7 @@ database::database(std::string_view name, shm::mode mode)
     : _buf({ name, "asp" }, mode) {
 }
 
-void database::reset(json const& keys) {
+void database::reset(com::json const& keys) {
     std::ostringstream ss;
     ss << keys;
     auto raw = ss.str();
@@ -73,15 +73,15 @@ record& database::operator[](uint32_t idx) {
     return dummy;
 }
 
-json database::capture(uint32_t version, camera_type const& camera) const {
-    json data(json::value_t::object);
+com::json database::capture(uint32_t version, camera_type const& camera) const {
+    com::json data(com::json::value_t::object);
     data["_VER_"] = capture_object(version, keys(), data, camera);
     return data;
 }
 
 uint32_t database::capture_object(uint32_t ver,
-                                  json const& keys,
-                                  json& data,
+                                  com::json const& keys,
+                                  com::json& data,
                                   camera_type const& camera) const {
     auto max_ver = 0U;
     for (auto const& [key, val] : keys.items()) {
@@ -92,11 +92,11 @@ uint32_t database::capture_object(uint32_t ver,
                 max_ver   = std::max(max_ver, rec.version());
             }
         } else if (val.is_object()) {
-            json object(json::value_t::object);
+            com::json object(com::json::value_t::object);
             max_ver   = std::max(max_ver, capture_object(ver, val, object, camera));
             data[key] = object;
         } else if (val.is_array()) {
-            json array(json::value_t::array);
+            com::json array(com::json::value_t::array);
             max_ver   = std::max(max_ver, capture_array(ver, val, array, camera));
             data[key] = array;
         }
@@ -105,8 +105,8 @@ uint32_t database::capture_object(uint32_t ver,
 }
 
 uint32_t database::capture_array(uint32_t ver,
-                                 json const& keys,
-                                 json& data,
+                                 com::json const& keys,
+                                 com::json& data,
                                  camera_type const& camera) const {
     auto max_ver = 0U;
     for (auto const& [key, val] : keys.items()) {
@@ -117,11 +117,11 @@ uint32_t database::capture_array(uint32_t ver,
                 max_ver = std::max(max_ver, rec.version());
             }
         } else if (val.is_object()) {
-            json object(json::value_t::object);
+            com::json object(com::json::value_t::object);
             max_ver = std::max(max_ver, capture_object(ver, val, object, camera));
             data.push_back(object);
         } else if (val.is_array()) {
-            json array(json::value_t::array);
+            com::json array(com::json::value_t::array);
             max_ver = std::max(max_ver, capture_array(ver, val, array, camera));
             data.push_back(array);
         }
@@ -129,10 +129,10 @@ uint32_t database::capture_array(uint32_t ver,
     return max_ver;
 }
 
-json database::keys() const {
+com::json database::keys() const {
     auto l = (layout const*)_buf.data();
     try {
-        return json::parse(l->keys());
+        return com::json::parse(l->keys());
     } catch (nlohmann::detail::parse_error) {
         log::error(name(), +"failed to read keys", std::string(l->keys()));
         return {};
