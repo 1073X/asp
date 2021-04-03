@@ -132,9 +132,14 @@ uint32_t database::capture_array(uint32_t ver,
 com::json database::keys() const {
     auto l = (layout const*)_buf.data();
     try {
-        return com::json::parse(l->keys());
+        com::json vals;
+        auto keys = std::string(l->keys());
+        if (!keys.empty()) {
+            vals = com::json::parse(l->keys());
+        }
+        return vals;
     } catch (nlohmann::detail::parse_error) {
-        log::error(name(), +"failed to read keys", std::string(l->keys()));
+        log::error(name(), +"failed to read keys [", std::string(l->keys()), +"]");
         return {};
     }
 }
